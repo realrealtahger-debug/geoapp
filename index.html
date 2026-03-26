@@ -7,16 +7,123 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet"/>
 
-<!-- ═══════════════════════════ CONFIG ═══════════════════════════════════════
-     Change WORKER_URL to your deployed Cloudflare Worker URL
-     e.g. https://role-apply-api.YOUR-SUBDOMAIN.workers.dev
-═══════════════════════════════════════════════════════════════════════════ -->
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║                         ★  YOUR CONFIG  ★                             ║
+     ║   Only edit this block. Nothing else in the file needs to be touched. ║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
 <script>
-  const WORKER_URL = "https://role-apply-api.realrealtahger.workers.dev";
+
+// ── 1. Your Cloudflare Worker URL ─────────────────────────────────────────────
+const WORKER_URL = "https://role-apply-api.realrealtahger.workers.dev";
+
+// ── 2. Site appearance ────────────────────────────────────────────────────────
+const SITE_CONFIG = {
+  server_name:  "My Server",      // shown in nav + homepage
+  server_icon:  "",               // URL to a server icon image (leave "" for none)
+  accent_color: "#7c6aff",        // main colour for buttons & highlights
+  description:  "Apply for special roles in our community. Link your Discord, answer a few questions, and our mods will review your application.",
+};
+
+// ── 3. Roles & questions ──────────────────────────────────────────────────────
+//
+//  To ADD a role:   copy a role block and paste it after the last one.
+//  To EDIT a role:  change the id, name, description, emoji, or questions.
+//  To REMOVE a role: delete its block entirely.
+//
+//  Question types:  "textarea"  →  big multi-line box
+//                   "text"      →  single line input
+//
+//  min_length:  minimum characters required (0 = no minimum)
+//  required:    true = must answer, false = optional
+//
+const ROLES = [
+
+  // ── Role 1 ──────────────────────────────────────────────────────────────────
+  {
+    id:          "1486681091388739584",   // ← Discord role ID (right-click role → Copy ID)
+    name:        "สมาชิก",               // ← change to your role's actual name
+    description: "สมัครเป็นสมาชิคเขื่อถือ :)",
+    emoji:       "⭐",
+    questions: [
+      {
+        id:         "reason",
+        label:      "ทำไมถึงคุณอยากเป็นสมาชิก",
+        type:       "textarea",
+        required:   true,
+        min_length: 0,
+      },
+      {
+        id:         "trust",
+        label:      "เราเชื่อถือคุณได้ไหม",
+        type:       "textarea",
+        required:   true,
+        min_length: 0,
+      },
+      {
+        id:         "time",
+        label:      "How long have you been in the server?",
+        type:       "text",
+        required:   false,
+        min_length: 0,
+      },
+      {
+        id:         "extra",
+        label:      "มีอะไรอยากให้รู้ไม้",
+        type:       "textarea",
+        required:   false,
+        min_length: 0,
+      },
+    ],
+  },
+
+  // ── Role 2 (example — remove the // at the start of each line to activate) ──
+  // {
+  //   id:          "PASTE_ROLE_ID_HERE",
+  //   name:        "VIP",
+  //   description: "Exclusive access for top contributors.",
+  //   emoji:       "👑",
+  //   questions: [
+  //     {
+  //       id:         "contrib",
+  //       label:      "What have you contributed to the community?",
+  //       type:       "textarea",
+  //       required:   true,
+  //       min_length: 80,
+  //     },
+  //     {
+  //       id:         "vouch",
+  //       label:      "Can any staff vouch for you? (Discord username)",
+  //       type:       "text",
+  //       required:   false,
+  //       min_length: 0,
+  //     },
+  //   ],
+  // },
+
+  // ── Role 3 (another example) ─────────────────────────────────────────────────
+  // {
+  //   id:          "PASTE_ROLE_ID_HERE",
+  //   name:        "Booster",
+  //   description: "For server boosters who want extra perks.",
+  //   emoji:       "🚀",
+  //   questions: [
+  //     {
+  //       id:         "boost_reason",
+  //       label:      "Why did you boost the server?",
+  //       type:       "textarea",
+  //       required:   true,
+  //       min_length: 20,
+  //     },
+  //   ],
+  // },
+
+];
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║                        END OF CONFIG                                    ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
 </script>
 
 <style>
-/* ── Reset & tokens ─────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg:       #0b0c0f;
@@ -36,95 +143,37 @@
   --font-mono:    'DM Mono', monospace;
 }
 html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-/* Scanline texture */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px,
-    rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
-  );
-  pointer-events: none; z-index: 9999;
-}
-
-/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.65; }
+body::after { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 9999; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 99px; }
 
-/* ── Nav ──────────────────────────────────────────────────────────────────── */
-#nav {
-  position: sticky; top: 0; z-index: 100;
-  height: 56px;
-  background: rgba(11,12,15,0.9);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center;
-  padding: 0 2rem; gap: 0.5rem;
-}
-.nav-brand {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  color: var(--text);
-  text-decoration: none;
-  letter-spacing: -0.01em;
-  cursor: pointer;
-}
+#nav { position: sticky; top: 0; z-index: 100; height: 56px; background: rgba(11,12,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 0.5rem; }
+.nav-brand { font-family: var(--font-display); font-size: 1.15rem; color: var(--text); letter-spacing: -0.01em; cursor: pointer; display: flex; align-items: center; gap: .5rem; }
 .nav-brand em { color: var(--accent); font-style: italic; }
+.nav-brand img { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); }
 .nav-sp { flex: 1; }
-.nav-btn {
-  background: none; border: 1px solid var(--border);
-  color: var(--muted); font-family: var(--font-body);
-  font-size: 0.8rem; font-weight: 500;
-  padding: 0.3rem 0.75rem; border-radius: 6px;
-  cursor: pointer; text-decoration: none;
-  transition: color .15s, border-color .15s, background .15s;
-  display: inline-flex; align-items: center; gap: 0.35rem;
-}
+.nav-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-family: var(--font-body); font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.75rem; border-radius: 6px; cursor: pointer; text-decoration: none; transition: color .15s, border-color .15s, background .15s; display: inline-flex; align-items: center; gap: 0.35rem; }
 .nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
 .nav-btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
 .nav-btn.accent:hover { background: var(--accent2); border-color: var(--accent2); }
-.nav-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 1.5px solid var(--border);
-  vertical-align: middle;
-}
+.nav-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); vertical-align: middle; }
 .nav-username { font-size: 0.8rem; color: var(--muted); }
 .nav-tag { font-size: 0.65rem; background: var(--surface2); color: var(--accent); padding: .15rem .4rem; border-radius: 4px; font-family: var(--font-mono); }
 
-/* ── Pages ────────────────────────────────────────────────────────────────── */
 .page { display: none; max-width: 860px; margin: 0 auto; padding: 3.5rem 1.5rem; }
 .page.active { display: block; }
 .page-wide { max-width: 1100px; }
 @keyframes fadein { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 .page.active { animation: fadein .25s ease; }
 
-/* ── Typography ───────────────────────────────────────────────────────────── */
 h1 { font-family: var(--font-display); font-size: clamp(2rem,5vw,3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
 h2 { font-family: var(--font-display); font-size: 1.8rem; letter-spacing: -0.01em; }
 h3 { font-family: var(--font-display); font-size: 1.25rem; }
 .lead { font-size: 1.05rem; color: var(--muted); line-height: 1.7; }
-.mono { font-family: var(--font-mono); }
 
-/* ── Buttons ──────────────────────────────────────────────────────────────── */
-.btn {
-  display: inline-flex; align-items: center; gap: 0.45rem;
-  font-family: var(--font-body); font-size: 0.875rem; font-weight: 700;
-  padding: 0.6rem 1.3rem; border-radius: 8px;
-  border: none; cursor: pointer; text-decoration: none;
-  transition: transform .12s, opacity .12s, box-shadow .12s;
-  letter-spacing: 0.01em;
-}
+.btn { display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--font-body); font-size: 0.875rem; font-weight: 700; padding: 0.6rem 1.3rem; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; transition: transform .12s, opacity .12s, box-shadow .12s; letter-spacing: 0.01em; }
 .btn:hover { transform: translateY(-1px); opacity: 0.92; }
 .btn:active { transform: none; }
 .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 0 20px rgba(124,106,255,0.25); }
@@ -135,90 +184,40 @@ h3 { font-family: var(--font-display); font-size: 1.25rem; }
 .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
 .btn:disabled { opacity: 0.4; pointer-events: none; }
 
-/* ── Cards ────────────────────────────────────────────────────────────────── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 1.5rem;
-}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; }
 .card-sm { padding: 1rem 1.25rem; }
 .card + .card { margin-top: 0.75rem; }
 
-/* ── Badges ───────────────────────────────────────────────────────────────── */
-.badge {
-  display: inline-flex; align-items: center;
-  padding: 0.18rem 0.55rem; border-radius: 99px;
-  font-size: 0.7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-}
+.badge { display: inline-flex; align-items: center; padding: 0.18rem 0.55rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .badge-pending  { background: rgba(251,191,36,.12);  color: var(--warn); }
 .badge-approved { background: rgba(74,222,128,.12);  color: var(--success); }
 .badge-denied   { background: rgba(248,113,113,.12); color: var(--danger); }
 
-/* ── Forms ────────────────────────────────────────────────────────────────── */
 .field { margin-bottom: 1.25rem; }
 .field label { display: block; font-size: 0.82rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.45rem; }
 .field label .req { color: var(--danger); }
-.field input, .field textarea, .field select {
-  width: 100%; background: var(--bg);
-  border: 1px solid var(--border); border-radius: 8px;
-  padding: 0.7rem 1rem; color: var(--text);
-  font-family: var(--font-body); font-size: 0.9rem;
-  outline: none; transition: border-color .15s, box-shadow .15s;
-  resize: vertical;
-}
-.field input:focus, .field textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124,106,255,.1);
-}
+.field input, .field textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; color: var(--text); font-family: var(--font-body); font-size: 0.9rem; outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical; }
+.field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,106,255,.1); }
 .field .hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }
 .field .char-count { font-size: 0.72rem; color: var(--muted); text-align: right; margin-top: 0.2rem; font-family: var(--font-mono); }
 
-/* ── Alerts ───────────────────────────────────────────────────────────────── */
 .alert { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; margin-bottom: 1rem; }
 .alert-error   { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); color: var(--danger); }
 .alert-success { background: rgba(74,222,128,.1);  border: 1px solid rgba(74,222,128,.2);  color: var(--success); }
 .alert-info    { background: rgba(124,106,255,.1); border: 1px solid rgba(124,106,255,.2); color: var(--accent2); }
 
-/* ── Divider ──────────────────────────────────────────────────────────────── */
 hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-
-/* ── Spinner ──────────────────────────────────────────────────────────────── */
-.spinner {
-  width: 22px; height: 22px; border: 2px solid var(--border);
-  border-top-color: var(--accent); border-radius: 50%;
-  animation: spin .6s linear infinite; margin: 2rem auto; display: block;
-}
+.spinner { width: 22px; height: 22px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 2rem auto; display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Modal ────────────────────────────────────────────────────────────────── */
-#modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
-  z-index: 500; align-items: center; justify-content: center;
-}
+#modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(8px); z-index: 500; align-items: center; justify-content: center; }
 #modal-overlay.open { display: flex; }
 #modal-box { width: min(480px, 92vw); animation: fadein .2s ease; }
 
-/* ── Home page ────────────────────────────────────────────────────────────── */
-#home-glow {
-  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 400px;
-  background: radial-gradient(ellipse, rgba(124,106,255,.18) 0%, transparent 70%);
-  filter: blur(60px); pointer-events: none;
-}
+#home-glow { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(ellipse, rgba(124,106,255,.18) 0%, transparent 70%); filter: blur(60px); pointer-events: none; }
 .role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 1rem; margin-top: 2rem; }
-.role-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 1.5rem;
-  cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s;
-  position: relative; overflow: hidden;
-}
-.role-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(124,106,255,.05) 0%, transparent 60%);
-  opacity: 0; transition: opacity .2s;
-}
+.role-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s; position: relative; overflow: hidden; }
+.role-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(124,106,255,.05) 0%, transparent 60%); opacity: 0; transition: opacity .2s; }
 .role-card:hover { border-color: rgba(124,106,255,.4); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.3); }
 .role-card:hover::before { opacity: 1; }
 .role-emoji { font-size: 2.2rem; margin-bottom: .75rem; }
@@ -226,29 +225,20 @@ hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 .role-desc  { color: var(--muted); font-size: .83rem; margin-top: .3rem; line-height: 1.5; }
 .role-qs    { font-size: .72rem; color: var(--accent2); margin-top: .6rem; font-family: var(--font-mono); }
 
-/* ── Apply form ───────────────────────────────────────────────────────────── */
 .back-link { color: var(--muted); font-size: .85rem; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; margin-bottom: 2rem; border: none; background: none; font-family: var(--font-body); transition: color .15s; }
 .back-link:hover { color: var(--text); }
 
-/* ── Mod tabs ─────────────────────────────────────────────────────────────── */
 .tab-bar { display: flex; gap: .25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .25rem; margin-bottom: 1.5rem; width: fit-content; }
 .tab { padding: .38rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 700; cursor: pointer; border: none; background: none; color: var(--muted); font-family: var(--font-body); transition: background .15s, color .15s; }
 .tab.active { background: var(--accent); color: #fff; }
 
-/* ── Stat pills ───────────────────────────────────────────────────────────── */
 .stat-row { display: flex; gap: .5rem; flex-wrap: wrap; }
 .stat-pill { padding: .28rem .75rem; border-radius: 99px; font-size: .78rem; font-weight: 700; font-family: var(--font-mono); }
 .pill-pending  { background: rgba(251,191,36,.1);  color: var(--warn); }
 .pill-approved { background: rgba(74,222,128,.1);  color: var(--success); }
 .pill-denied   { background: rgba(248,113,113,.1); color: var(--danger); }
 
-/* ── App row in mod dashboard ─────────────────────────────────────────────── */
-.app-row {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 1.1rem 1.3rem;
-  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-  transition: opacity .3s;
-}
+.app-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem 1.3rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; transition: opacity .3s; }
 .app-row + .app-row { margin-top: .6rem; }
 .app-row-fade { opacity: 0; }
 .app-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
@@ -258,23 +248,19 @@ hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 .app-preview { margin-top: .6rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .8rem; font-size: .82rem; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .app-actions { display: flex; gap: .4rem; flex-shrink: 0; }
 
-/* ── Review page ──────────────────────────────────────────────────────────── */
 .answer-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; }
 .answer-q { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .4rem; }
 .answer-a { font-size: .9rem; line-height: 1.65; white-space: pre-wrap; }
 
-/* ── My applications ──────────────────────────────────────────────────────── */
 .my-app-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.3rem; }
 .my-app-card + .my-app-card { margin-top: .75rem; }
 details summary { cursor: pointer; font-size: .8rem; color: var(--muted); list-style: none; padding-top: .6rem; }
 details summary::before { content: '▸ '; }
 details[open] summary::before { content: '▾ '; }
 
-/* ── Empty state ──────────────────────────────────────────────────────────── */
 .empty { text-align: center; padding: 4rem 2rem; }
 .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
 
-/* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   #nav { padding: 0 1rem; }
   .page { padding: 2rem 1rem; }
@@ -284,43 +270,36 @@ details[open] summary::before { content: '▾ '; }
 </head>
 <body>
 
-<!-- ── Nav ───────────────────────────────────────────────────────────────── -->
 <nav id="nav">
-  <span class="nav-brand" onclick="showPage('home')">apply<em>.</em></span>
+  <span class="nav-brand" onclick="showPage('home')" id="nav-brand">apply<em>.</em></span>
   <div class="nav-sp"></div>
   <div id="nav-auth"></div>
 </nav>
 
-<!-- ── Pages ─────────────────────────────────────────────────────────────── -->
-
-<!-- HOME -->
 <div id="page-home" class="page">
   <div style="position:relative;text-align:center;padding-top:2rem">
     <div id="home-glow"></div>
     <div style="position:relative;z-index:1">
       <p style="font-family:var(--font-mono);font-size:.78rem;color:var(--accent2);letter-spacing:.12em;margin-bottom:1rem">ROLE APPLICATIONS</p>
       <h1 id="home-title">Loading<em style="color:var(--accent)">.</em></h1>
-      <p class="lead" style="max-width:520px;margin:1.2rem auto 2rem" id="home-sub">Connect your Discord account to apply for special roles in our community.</p>
+      <p class="lead" style="max-width:520px;margin:1.2rem auto 2rem" id="home-sub"></p>
       <div id="home-cta"></div>
       <div id="role-grid" class="role-grid" style="text-align:left;margin-top:3.5rem"></div>
     </div>
   </div>
 </div>
 
-<!-- APPLY FORM -->
 <div id="page-apply" class="page" style="max-width:680px">
   <button class="back-link" onclick="showPage('home')">← Back to roles</button>
   <div id="apply-content"></div>
 </div>
 
-<!-- MY APPLICATIONS -->
 <div id="page-mine" class="page">
   <h2 style="margin-bottom:.4rem">My Applications</h2>
   <p class="lead" style="margin-bottom:2rem">Track the status of your submissions.</p>
   <div id="mine-list"></div>
 </div>
 
-<!-- MOD DASHBOARD -->
 <div id="page-mod" class="page page-wide">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem">
     <div>
@@ -337,30 +316,31 @@ details[open] summary::before { content: '▾ '; }
   <div id="mod-list"></div>
 </div>
 
-<!-- REVIEW PAGE -->
 <div id="page-review" class="page" style="max-width:720px">
   <button class="back-link" onclick="showPage('mod');loadMod('pending')">← Back to dashboard</button>
   <div id="review-content"></div>
 </div>
 
-<!-- ── Modal ──────────────────────────────────────────────────────────────── -->
 <div id="modal-overlay" onclick="closeModal(event)">
   <div id="modal-box" class="card"></div>
 </div>
 
-<!-- ═══════════════════════════ JAVASCRIPT ═══════════════════════════════════ -->
 <script>
-// ── State ─────────────────────────────────────────────────────────────────
-let STATE = {
-  token:   null,
-  user:    null,
-  config:  null,
-  currentAppId: null,
-};
+let STATE = { token: null, user: null };
 
-// ── Init ──────────────────────────────────────────────────────────────────
+// Apply SITE_CONFIG to the page on load
+(function() {
+  document.title = SITE_CONFIG.server_name + ' — Role Applications';
+  document.documentElement.style.setProperty('--accent', SITE_CONFIG.accent_color);
+  const brand = document.getElementById('nav-brand');
+  if (SITE_CONFIG.server_icon) {
+    brand.innerHTML = `<img src="${esc(SITE_CONFIG.server_icon)}" alt="">${esc(SITE_CONFIG.server_name)}<em>.</em>`;
+  } else {
+    brand.innerHTML = `${esc(SITE_CONFIG.server_name)}<em>.</em>`;
+  }
+})();
+
 async function init() {
-  // Grab token from URL hash after OAuth redirect
   const hash = new URLSearchParams(location.hash.slice(1));
   if (hash.get('token')) {
     STATE.token = hash.get('token');
@@ -368,52 +348,29 @@ async function init() {
     history.replaceState(null, '', location.pathname);
   }
   if (hash.get('error')) {
-    const msgs = {
-      not_in_server: "You must be in the server to apply.",
-      oauth_fail:    "Discord login failed. Try again.",
-      no_code:       "OAuth was cancelled.",
-    };
+    const msgs = { not_in_server: "You must be in the server to apply.", oauth_fail: "Discord login failed. Try again.", no_code: "OAuth was cancelled." };
     showToast(msgs[hash.get('error')] || 'Login error.', 'error');
     history.replaceState(null, '', location.pathname);
   }
-
   STATE.token = STATE.token || localStorage.getItem('app_token');
-
-  // Load config
-  try {
-    const r = await api('/roles');
-    STATE.config = r;
-  } catch {}
-
   if (STATE.token) {
-    try {
-      STATE.user = await api('/me');
-    } catch {
-      STATE.token = null;
-      localStorage.removeItem('app_token');
-    }
+    try { STATE.user = await api('/me'); }
+    catch { STATE.token = null; localStorage.removeItem('app_token'); }
   }
-
   renderNav();
   showPage('home');
 }
 
-// ── API helper ────────────────────────────────────────────────────────────
 async function api(path, opts = {}) {
   const res = await fetch(WORKER_URL + path, {
     ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(STATE.token ? { Authorization: `Bearer ${STATE.token}` } : {}),
-      ...(opts.headers || {}),
-    },
+    headers: { 'Content-Type': 'application/json', ...(STATE.token ? { Authorization: `Bearer ${STATE.token}` } : {}), ...(opts.headers || {}) },
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Request failed');
   return data;
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────
 function renderNav() {
   const el = document.getElementById('nav-auth');
   if (STATE.user) {
@@ -433,24 +390,18 @@ function renderNav() {
   }
 }
 
-// ── Page routing ──────────────────────────────────────────────────────────
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const el = document.getElementById('page-' + id);
   if (el) el.classList.add('active');
-  if (id === 'home')  renderHome();
-  if (id === 'mine')  renderMine();
+  if (id === 'home') renderHome();
+  if (id === 'mine') renderMine();
   window.scrollTo(0, 0);
 }
 
-// ── HOME ──────────────────────────────────────────────────────────────────
-async function renderHome() {
-  const cfg = STATE.config;
-  document.getElementById('home-title').innerHTML =
-    (cfg?.server_name || 'Our Server') + ' <em style="color:var(--accent)">Roles</em>';
-  document.getElementById('home-sub').textContent =
-    'Apply for special roles in our community. Link your Discord, answer a few questions, and mods will review your application.';
-
+function renderHome() {
+  document.getElementById('home-title').innerHTML = esc(SITE_CONFIG.server_name) + ' <em style="color:var(--accent)">Roles</em>';
+  document.getElementById('home-sub').textContent = SITE_CONFIG.description;
   const cta = document.getElementById('home-cta');
   if (STATE.user) {
     cta.innerHTML = `<button class="btn btn-primary" onclick="showPage('apply-list')">Browse Roles →</button>`;
@@ -460,11 +411,7 @@ async function renderHome() {
       Login with Discord to Apply
     </button>`;
   }
-
-  // Role preview cards
-  const grid = document.getElementById('role-grid');
-  if (!cfg) { grid.innerHTML = ''; return; }
-  grid.innerHTML = cfg.roles.map(r => `
+  document.getElementById('role-grid').innerHTML = ROLES.map(r => `
     <div class="role-card" onclick="STATE.user ? openApply('${esc(r.id)}') : login()">
       <div class="role-emoji">${r.emoji}</div>
       <div class="role-name">${esc(r.name)}</div>
@@ -474,47 +421,37 @@ async function renderHome() {
   `).join('');
 }
 
-// ── APPLY FORM ────────────────────────────────────────────────────────────
 async function openApply(roleId) {
   if (!STATE.user) { login(); return; }
-  const cfg  = STATE.config;
-  const role = cfg.roles.find(r => r.id === roleId);
+  const role = ROLES.find(r => r.id === roleId);
   if (!role) return;
-
-  // Check pending
   let pending = [];
   try { pending = await api('/applications/mine'); } catch {}
   const hasPending = pending.some(a => a.role_id === roleId && a.status === 'pending');
   const hasRole    = (STATE.user.guild_roles || []).includes(roleId);
-
   const content = document.getElementById('apply-content');
   if (hasRole) {
     content.innerHTML = `<div class="alert alert-success">You already have the <strong>${esc(role.name)}</strong> role!</div>`;
-    showPage('apply');
-    return;
+    showPage('apply'); return;
   }
   if (hasPending) {
-    content.innerHTML = `<div class="alert alert-info">You already have a pending application for <strong>${esc(role.name)}</strong>. Check <button class="btn btn-ghost btn-sm" onclick="showPage('mine')">My Applications</button></div>`;
-    showPage('apply');
-    return;
+    content.innerHTML = `<div class="alert alert-info">You already have a pending application for <strong>${esc(role.name)}</strong>. <button class="btn btn-ghost btn-sm" onclick="showPage('mine')">View it →</button></div>`;
+    showPage('apply'); return;
   }
-
   content.innerHTML = `
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
       <span style="font-size:3rem">${role.emoji}</span>
-      <div>
-        <h2>${esc(role.name)}</h2>
-        <p style="color:var(--muted);font-size:.9rem">${esc(role.description)}</p>
-      </div>
+      <div><h2>${esc(role.name)}</h2><p style="color:var(--muted);font-size:.9rem">${esc(role.description)}</p></div>
     </div>
     <div id="apply-alert"></div>
     <form id="apply-form">
       ${role.questions.map(q => `
         <div class="field">
-          <label for="q-${esc(q.id)}">${esc(q.label)} ${q.required ? '<span class="req">*</span>' : ''}</label>
+          <label for="q-${esc(q.id)}">${esc(q.label)}
+            ${q.required ? '<span class="req">*</span>' : '<span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional)</span>'}
+          </label>
           ${q.type === 'textarea'
-            ? `<textarea id="q-${esc(q.id)}" name="${esc(q.id)}" rows="4" ${q.required?'required':''}
-                 oninput="updateCount(this,${q.min_length||0})"></textarea>
+            ? `<textarea id="q-${esc(q.id)}" name="${esc(q.id)}" rows="4" ${q.required?'required':''} oninput="updateCount(this,'${esc(q.id)}',${q.min_length||0})"></textarea>
                ${q.min_length ? `<div class="char-count" id="cc-${esc(q.id)}">0 / ${q.min_length} min</div>` : ''}`
             : `<input type="text" id="q-${esc(q.id)}" name="${esc(q.id)}" ${q.required?'required':''}>`
           }
@@ -529,38 +466,33 @@ async function openApply(roleId) {
     </form>
   `;
   showPage('apply');
-
   document.getElementById('apply-form').onsubmit = async (e) => {
     e.preventDefault();
-    const btn   = document.getElementById('apply-submit');
-    const alert = document.getElementById('apply-alert');
+    const btn = document.getElementById('apply-submit');
+    const alertEl = document.getElementById('apply-alert');
     btn.disabled = true; btn.textContent = 'Submitting…';
-    alert.innerHTML = '';
-
+    alertEl.innerHTML = '';
     const answers = {};
-    role.questions.forEach(q => {
-      answers[q.id] = document.getElementById('q-' + q.id)?.value?.trim() || '';
-    });
+    role.questions.forEach(q => { answers[q.id] = document.getElementById('q-' + q.id)?.value?.trim() || ''; });
     try {
       await api('/applications', { method: 'POST', body: JSON.stringify({ role_id: roleId, answers }) });
-      alert.innerHTML = '<div class="alert alert-success">Application submitted! You\'ll be DM\'d when it\'s reviewed. 🎉</div>';
+      alertEl.innerHTML = '<div class="alert alert-success">Application submitted! You\'ll be DM\'d when it\'s reviewed. 🎉</div>';
       document.getElementById('apply-form').style.display = 'none';
     } catch(err) {
-      alert.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+      alertEl.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
       btn.disabled = false; btn.textContent = 'Submit Application →';
     }
   };
 }
 
-function updateCount(el, min) {
-  const cc = document.getElementById('cc-' + el.name);
+function updateCount(el, id, min) {
+  const cc = document.getElementById('cc-' + id);
   if (!cc) return;
   const n = el.value.trim().length;
   cc.textContent = `${n} / ${min} min`;
   cc.style.color = n >= min ? 'var(--success)' : 'var(--muted)';
 }
 
-// ── MY APPLICATIONS ───────────────────────────────────────────────────────
 async function renderMine() {
   if (!STATE.user) { showPage('home'); return; }
   const list = document.getElementById('mine-list');
@@ -573,68 +505,58 @@ async function renderMine() {
   }
   list.innerHTML = apps.map(a => {
     const answers = JSON.parse(a.answers || '{}');
-    const ansHtml = Object.entries(answers).filter(([,v])=>v).map(([k,v])=>`
-      <div class="answer-block" style="margin-top:.5rem">
-        <div class="answer-q">${esc(k)}</div>
-        <div class="answer-a" style="font-size:.82rem">${esc(v)}</div>
-      </div>`).join('');
+    const role    = ROLES.find(r => r.id === a.role_id);
+    const qs      = role?.questions || [];
+    const ansHtml = qs.length
+      ? qs.map(q => answers[q.id] ? `<div class="answer-block" style="margin-top:.5rem"><div class="answer-q">${esc(q.label)}</div><div class="answer-a" style="font-size:.82rem">${esc(answers[q.id])}</div></div>` : '').join('')
+      : Object.entries(answers).filter(([,v])=>v).map(([k,v])=>`<div class="answer-block" style="margin-top:.5rem"><div class="answer-q">${esc(k)}</div><div class="answer-a" style="font-size:.82rem">${esc(v)}</div></div>`).join('');
     return `
     <div class="my-app-card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
         <div style="display:flex;align-items:center;gap:.6rem">
-          <strong>${esc(a.role_name)}</strong>
+          <strong>${role ? role.emoji + ' ' : ''}${esc(a.role_name)}</strong>
           <span class="badge badge-${a.status}">${a.status}</span>
         </div>
         <span style="color:var(--muted);font-size:.75rem">${a.created_at?.slice(0,10)}</span>
       </div>
       ${a.mod_note ? `<div style="margin-top:.7rem;padding:.6rem .9rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><p style="font-size:.72rem;color:var(--muted);margin-bottom:.2rem">Mod note from ${esc(a.reviewed_by||'')}</p><p style="font-size:.85rem">${esc(a.mod_note)}</p></div>` : ''}
-      <details><summary>View your answers</summary><div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.4rem">${ansHtml}</div></details>
+      <details><summary>View your answers</summary><div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem">${ansHtml}</div></details>
     </div>`;
   }).join('');
 }
 
-// ── MOD DASHBOARD ─────────────────────────────────────────────────────────
 async function loadMod(status, tabEl) {
   if (!STATE.user?.is_mod) { showPage('home'); return; }
-  if (tabEl) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tabEl.classList.add('active');
-  }
+  if (tabEl) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tabEl.classList.add('active'); }
   const list = document.getElementById('mod-list');
   list.innerHTML = '<div class="spinner"></div>';
-
   let apps = [];
   try { apps = await api(`/mod/applications?status=${status}`); } catch {}
-
-  // Stats (fetch all three)
   updateModStats();
-
   if (!apps.length) {
     list.innerHTML = `<div class="empty"><div class="empty-icon">🎉</div><h3>All clear</h3><p style="color:var(--muted)">No ${status} applications.</p></div>`;
     return;
   }
-
-  const cfg = STATE.config;
   list.innerHTML = apps.map(a => {
-    const answers = JSON.parse(a.answers || '{}');
-    const firstAns = Object.values(answers).find(v => v) || '';
-    const firstKey = Object.keys(answers).find(k => answers[k]) || '';
-    const role = cfg?.roles.find(r => r.id === a.role_id);
-    const qs   = role?.questions || [];
-    const qLabel = qs.find(q => q.id === firstKey)?.label || firstKey;
+    const answers  = JSON.parse(a.answers || '{}');
+    const role     = ROLES.find(r => r.id === a.role_id);
+    const qs       = role?.questions || [];
+    const firstKey = qs[0]?.id || Object.keys(answers)[0] || '';
+    const firstQ   = qs[0]?.label || firstKey;
+    const firstAns = answers[firstKey] || '';
     return `
     <div class="app-row" id="app-${a.id}">
       <img class="app-avatar" src="${esc(a.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png')}" alt="">
       <div class="app-info">
-        <div class="app-user">${esc(a.username)} <span style="color:var(--muted);font-weight:400;font-size:.8rem">→ ${esc(a.role_name)}</span></div>
+        <div class="app-user">${esc(a.username)} <span style="color:var(--muted);font-weight:400;font-size:.8rem">→ ${role ? role.emoji + ' ' : ''}${esc(a.role_name)}</span></div>
         <div class="app-meta">${a.created_at?.slice(0,16).replace('T',' ')} UTC${a.reviewed_by ? ` · reviewed by ${esc(a.reviewed_by)}` : ''}</div>
-        ${firstAns ? `<div class="app-preview"><span style="color:var(--accent2);font-size:.7rem;font-weight:700">${esc(qLabel)}: </span>${esc(firstAns)}</div>` : ''}
+        ${firstAns ? `<div class="app-preview"><span style="color:var(--accent2);font-size:.7rem;font-weight:700">${esc(firstQ)}: </span>${esc(firstAns)}</div>` : ''}
       </div>
       <div class="app-actions">
         <button class="btn btn-ghost btn-sm" onclick="openReview(${a.id})">Full Review</button>
         ${status === 'pending' ? `
           <button class="btn btn-success btn-sm" onclick="quickAction(${a.id},'approve')">✓</button>
-          <button class="btn btn-danger btn-sm"  onclick="quickAction(${a.id},'deny')">✗</button>
+          <button class="btn btn-danger  btn-sm" onclick="quickAction(${a.id},'deny')">✗</button>
         ` : ''}
       </div>
     </div>`;
@@ -645,16 +567,8 @@ async function updateModStats() {
   const el = document.getElementById('mod-stats');
   if (!el) return;
   try {
-    const [p, ap, d] = await Promise.all([
-      api('/mod/applications?status=pending'),
-      api('/mod/applications?status=approved'),
-      api('/mod/applications?status=denied'),
-    ]);
-    el.innerHTML = `
-      <span class="stat-pill pill-pending">${p.length} pending</span>
-      <span class="stat-pill pill-approved">${ap.length} approved</span>
-      <span class="stat-pill pill-denied">${d.length} denied</span>
-    `;
+    const [p, ap, d] = await Promise.all([api('/mod/applications?status=pending'), api('/mod/applications?status=approved'), api('/mod/applications?status=denied')]);
+    el.innerHTML = `<span class="stat-pill pill-pending">${p.length} pending</span><span class="stat-pill pill-approved">${ap.length} approved</span><span class="stat-pill pill-denied">${d.length} denied</span>`;
   } catch {}
 }
 
@@ -663,14 +577,12 @@ function quickAction(appId, action) {
   document.getElementById('modal-box').innerHTML = `
     <h3 style="margin-bottom:1rem">${isApprove ? 'Approve' : 'Deny'} application</h3>
     <div class="field">
-      <label for="modal-note">Mod note <span style="color:var(--muted);font-weight:300">(optional — sent via DM)</span></label>
+      <label for="modal-note">Mod note <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional — sent via DM)</span></label>
       <textarea id="modal-note" rows="3" placeholder="${isApprove ? 'e.g. Welcome aboard!' : 'e.g. Not enough activity yet.'}"></textarea>
     </div>
     <div style="display:flex;gap:.75rem;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn ${isApprove ? 'btn-success' : 'btn-danger'}" onclick="submitQuick(${appId},'${action}')">
-        ${isApprove ? '✓ Approve' : '✗ Deny'}
-      </button>
+      <button class="btn ${isApprove ? 'btn-success' : 'btn-danger'}" onclick="submitQuick(${appId},'${action}')">${isApprove ? '✓ Approve' : '✗ Deny'}</button>
     </div>
   `;
   openModal();
@@ -684,44 +596,27 @@ async function submitQuick(appId, action) {
     const row = document.getElementById('app-' + appId);
     if (row) { row.classList.add('app-row-fade'); setTimeout(() => row.remove(), 320); }
     updateModStats();
-  } catch(e) {
-    showToast(e.message, 'error');
-  }
+  } catch(e) { showToast(e.message, 'error'); }
 }
 
-// ── FULL REVIEW ───────────────────────────────────────────────────────────
 async function openReview(appId) {
   const content = document.getElementById('review-content');
   content.innerHTML = '<div class="spinner"></div>';
   showPage('review');
-
   let apps = [];
   try { apps = await api('/mod/applications?status=pending'); } catch {}
-  // Try all statuses
   if (!apps.find(a => a.id === appId)) {
     try { const a = await api('/mod/applications?status=approved'); apps = [...apps, ...a]; } catch {}
     try { const a = await api('/mod/applications?status=denied');   apps = [...apps, ...a]; } catch {}
   }
   const a = apps.find(x => x.id === appId);
   if (!a) { content.innerHTML = '<div class="alert alert-error">Application not found.</div>'; return; }
-
   const answers = JSON.parse(a.answers || '{}');
-  const cfg     = STATE.config;
-  const role    = cfg?.roles.find(r => r.id === a.role_id);
+  const role    = ROLES.find(r => r.id === a.role_id);
   const qs      = role?.questions || [];
-
   const ansHtml = qs.length
-    ? qs.map(q => `
-        <div class="answer-block">
-          <div class="answer-q">${esc(q.label)}</div>
-          <div class="answer-a">${answers[q.id] ? esc(answers[q.id]) : '<em style="color:var(--muted)">No answer.</em>'}</div>
-        </div>`).join('')
-    : Object.entries(answers).map(([k,v]) => `
-        <div class="answer-block">
-          <div class="answer-q">${esc(k)}</div>
-          <div class="answer-a">${esc(v)}</div>
-        </div>`).join('');
-
+    ? qs.map(q => `<div class="answer-block"><div class="answer-q">${esc(q.label)}</div><div class="answer-a">${answers[q.id] ? esc(answers[q.id]) : '<em style="color:var(--muted)">No answer.</em>'}</div></div>`).join('')
+    : Object.entries(answers).map(([k,v]) => `<div class="answer-block"><div class="answer-q">${esc(k)}</div><div class="answer-a">${esc(v)}</div></div>`).join('');
   content.innerHTML = `
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
       <img src="${esc(a.avatar||'https://cdn.discordapp.com/embed/avatars/0.png')}" style="width:56px;height:56px;border-radius:50%;border:2px solid var(--border)">
@@ -730,7 +625,7 @@ async function openReview(appId) {
           <h3>${esc(a.username)}</h3>
           <span class="badge badge-${a.status}">${a.status}</span>
         </div>
-        <p style="color:var(--muted);font-size:.85rem">Applying for <strong>${esc(a.role_name)}</strong> ${role?.emoji||''}</p>
+        <p style="color:var(--muted);font-size:.85rem">Applying for ${role ? role.emoji + ' ' : ''}<strong>${esc(a.role_name)}</strong></p>
         <p style="color:var(--muted);font-size:.75rem">${a.created_at?.slice(0,16).replace('T',' ')} UTC</p>
       </div>
     </div>
@@ -740,7 +635,7 @@ async function openReview(appId) {
         <h3 style="margin-bottom:1rem">Make a decision</h3>
         <div id="review-alert"></div>
         <div class="field">
-          <label for="review-note">Mod note <span style="color:var(--muted);font-weight:300">(optional — sent via DM)</span></label>
+          <label for="review-note">Mod note <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional — sent via DM)</span></label>
           <textarea id="review-note" rows="3" placeholder="Explain your decision…"></textarea>
         </div>
         <div style="display:flex;gap:.75rem;flex-wrap:wrap">
@@ -760,53 +655,35 @@ async function openReview(appId) {
 }
 
 async function submitReview(appId, action) {
-  const note  = document.getElementById('review-note')?.value?.trim() || '';
-  const alert = document.getElementById('review-alert');
+  const note    = document.getElementById('review-note')?.value?.trim() || '';
+  const alertEl = document.getElementById('review-alert');
   try {
     await api('/mod/review', { method: 'POST', body: JSON.stringify({ app_id: appId, action, mod_note: note }) });
-    alert.innerHTML = `<div class="alert alert-success">Application ${action === 'approve' ? 'approved' : 'denied'} successfully!</div>`;
+    alertEl.innerHTML = `<div class="alert alert-success">Application ${action === 'approve' ? 'approved' : 'denied'} successfully!</div>`;
     setTimeout(() => { showPage('mod'); loadMod('pending'); }, 1200);
-  } catch(e) {
-    alert.innerHTML = `<div class="alert alert-error">${esc(e.message)}</div>`;
-  }
+  } catch(e) { alertEl.innerHTML = `<div class="alert alert-error">${esc(e.message)}</div>`; }
 }
 
-// ── Auth ──────────────────────────────────────────────────────────────────
-function login() { location.href = WORKER_URL + '/oauth/redirect'; }
-function logout() {
-  STATE.token = null; STATE.user = null;
-  localStorage.removeItem('app_token');
-  renderNav(); showPage('home');
-}
+function login()  { location.href = WORKER_URL + '/oauth/redirect'; }
+function logout() { STATE.token = null; STATE.user = null; localStorage.removeItem('app_token'); renderNav(); showPage('home'); }
+function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal(e) { if (!e || e.target === document.getElementById('modal-overlay')) document.getElementById('modal-overlay').classList.remove('open'); }
 
-// ── Modal ─────────────────────────────────────────────────────────────────
-function openModal() { document.getElementById('modal-overlay').classList.add('open'); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal-overlay'))
-    document.getElementById('modal-overlay').classList.remove('open');
-}
-
-// ── Toast ─────────────────────────────────────────────────────────────────
 function showToast(msg, type = 'info') {
   const t = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
-    padding:.75rem 1.1rem;border-radius:10px;font-size:.875rem;font-weight:600;
-    animation:fadein .2s ease;max-width:340px;
-    ${type==='error' ? 'background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:var(--danger)' :
-      type==='success' ? 'background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:var(--success)' :
-      'background:rgba(124,106,255,.15);border:1px solid rgba(124,106,255,.3);color:var(--accent2)'}`;
+  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;padding:.75rem 1.1rem;border-radius:10px;font-size:.875rem;font-weight:600;animation:fadein .2s ease;max-width:340px;
+    ${type==='error'   ? 'background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:var(--danger)'   :
+      type==='success' ? 'background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:var(--success)'   :
+                         'background:rgba(124,106,255,.15);border:1px solid rgba(124,106,255,.3);color:var(--accent2)'}`;
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }
 
-// ── Escape HTML ───────────────────────────────────────────────────────────
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Kick off ──────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
