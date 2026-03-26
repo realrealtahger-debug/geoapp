@@ -18,10 +18,10 @@ const WORKER_URL = "https://role-apply-api.realrealtahger.workers.dev";
 
 // ── 2. Site appearance ────────────────────────────────────────────────────────
 const SITE_CONFIG = {
-  server_name:  "My Server",      // shown in nav + homepage
+  server_name:  "HYPER",      // shown in nav + homepage
   server_icon:  "",               // URL to a server icon image (leave "" for none)
   accent_color: "#7c6aff",        // main colour for buttons & highlights
-  description:  "Apply for special roles in our community. Link your Discord, answer a few questions, and our mods will review your application.",
+  description:  "เชื่อมดิส แล้วทำขอเป็นสมาชิคเพื่อไปคุยกับคนอื่นเขาได้",
 };
 
 // ── 3. Roles & questions ──────────────────────────────────────────────────────
@@ -50,28 +50,28 @@ const ROLES = [
         label:      "ทำไมถึงคุณอยากเป็นสมาชิก",
         type:       "textarea",
         required:   true,
-        min_length: 0,
+        min_length: 1,
       },
       {
         id:         "trust",
         label:      "เราเชื่อถือคุณได้ไหม",
         type:       "textarea",
         required:   true,
-        min_length: 0,
+        min_length: 1,
       },
-      {
-        id:         "time",
-        label:      "How long have you been in the server?",
-        type:       "text",
-        required:   false,
-        min_length: 0,
-      },
+ //     {
+ //       id:         "time",
+ //       label:      "How long have you been in the server?",
+ //       type:       "text",
+ //       required:   false,
+ //       min_length: 0,
+ //     },
       {
         id:         "extra",
         label:      "มีอะไรอยากให้รู้ไม้",
         type:       "textarea",
         required:   false,
-        min_length: 0,
+        min_length: 1,
       },
     ],
   },
