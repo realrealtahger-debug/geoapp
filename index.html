@@ -6,266 +6,172 @@
 <title>Role Applications</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet"/>
-
-<!-- ╔══════════════════════════════════════════════════════════════════════════╗
-     ║                         ★  YOUR CONFIG  ★                             ║
-     ║   Only edit this block. Nothing else in the file needs to be touched. ║
-     ╚══════════════════════════════════════════════════════════════════════════╝ -->
 <script>
-
-// ── 1. Your Cloudflare Worker URL ─────────────────────────────────────────────
-const WORKER_URL = "https://role-apply-api.realrealtahger.workers.dev";
-
-// ── 2. Site appearance ────────────────────────────────────────────────────────
-const SITE_CONFIG = {
-  server_name:  "HYPER",      // shown in nav + homepage
-  server_icon:  "",               // URL to a server icon image (leave "" for none)
-  accent_color: "#7c6aff",        // main colour for buttons & highlights
-  description:  "เชื่อมดิส แล้วทำขอเป็นสมาชิคเพื่อไปคุยกับคนอื่นเขาได้ :D",
-};
-
-// ── 3. Roles & questions ──────────────────────────────────────────────────────
-//
-//  To ADD a role:   copy a role block and paste it after the last one.
-//  To EDIT a role:  change the id, name, description, emoji, or questions.
-//  To REMOVE a role: delete its block entirely.
-//
-//  Question types:  "textarea"  →  big multi-line box
-//                   "text"      →  single line input
-//
-//  min_length:  minimum characters required (0 = no minimum)
-//  required:    true = must answer, false = optional
-//
-const ROLES = [
-
-  // ── Role 1 ──────────────────────────────────────────────────────────────────
-  {
-    id:          "1486681091388739584",   // ← Discord role ID (right-click role → Copy ID)
-    name:        "สมาชิก",               // ← change to your role's actual name
-    description: "สมัครเป็นสมาชิคเขื่อถือ :)",
-    emoji:       "⭐",
-    questions: [
-      {
-        id:         "reason",
-        label:      "ทำไมถึงคุณอยากเป็นสมาชิก",
-        type:       "textarea",
-        required:   true,
-        min_length: 1,
-      },
-      {
-        id:         "trust",
-        label:      "เราเชื่อถือคุณได้ไหม",
-        type:       "textarea",
-        required:   true,
-        min_length: 1,
-      },
- //     {
- //       id:         "time",
- //       label:      "How long have you been in the server?",
- //       type:       "text",
- //       required:   false,
- //       min_length: 0,
- //     },
-      {
-        id:         "extra",
-        label:      "มีอะไรอยากให้รู้ไม้",
-        type:       "textarea",
-        required:   false,
-        min_length: 1,
-      },
-    ],
-  },
-
-  // ── Role 2 (example — remove the // at the start of each line to activate) ──
-  // {
-  //   id:          "PASTE_ROLE_ID_HERE",
-  //   name:        "VIP",
-  //   description: "Exclusive access for top contributors.",
-  //   emoji:       "👑",
-  //   questions: [
-  //     {
-  //       id:         "contrib",
-  //       label:      "What have you contributed to the community?",
-  //       type:       "textarea",
-  //       required:   true,
-  //       min_length: 80,
-  //     },
-  //     {
-  //       id:         "vouch",
-  //       label:      "Can any staff vouch for you? (Discord username)",
-  //       type:       "text",
-  //       required:   false,
-  //       min_length: 0,
-  //     },
-  //   ],
-  // },
-
-  // ── Role 3 (another example) ─────────────────────────────────────────────────
-  // {
-  //   id:          "PASTE_ROLE_ID_HERE",
-  //   name:        "Booster",
-  //   description: "For server boosters who want extra perks.",
-  //   emoji:       "🚀",
-  //   questions: [
-  //     {
-  //       id:         "boost_reason",
-  //       label:      "Why did you boost the server?",
-  //       type:       "textarea",
-  //       required:   true,
-  //       min_length: 20,
-  //     },
-  //   ],
-  // },
-
-];
-// ╔══════════════════════════════════════════════════════════════════════════╗
-// ║                        END OF CONFIG                                    ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
+  // ── Only thing you need to set ──────────────────────────────────────────────
+  const WORKER_URL = "https://role-apply-api.realrealtahger.workers.dev";
+  // Everything else (server name, roles, questions) is editable from the site
+  // once you're logged in as a mod.
 </script>
-
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:       #0b0c0f;
-  --surface:  #13151a;
-  --surface2: #1b1e26;
-  --border:   rgba(255,255,255,0.07);
-  --text:     #dde1ea;
-  --muted:    #5a6272;
-  --accent:   #7c6aff;
-  --accent2:  #a78bfa;
-  --success:  #4ade80;
-  --danger:   #f87171;
-  --warn:     #fbbf24;
-  --r:        14px;
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
-  --font-mono:    'DM Mono', monospace;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0c0f;--surface:#13151a;--surface2:#1b1e26;
+  --border:rgba(255,255,255,.07);--text:#dde1ea;--muted:#5a6272;
+  --accent:#7c6aff;--accent2:#a78bfa;--success:#4ade80;--danger:#f87171;--warn:#fbbf24;
+  --r:14px;
+  --font-d:'DM Serif Display',Georgia,serif;
+  --font-b:'DM Sans',system-ui,sans-serif;
+  --font-m:'DM Mono',monospace;
 }
-html { scroll-behavior: smooth; }
-body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.65; }
-body::after { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 9999; }
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 99px; }
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.65}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:9999}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
 
-#nav { position: sticky; top: 0; z-index: 100; height: 56px; background: rgba(11,12,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; gap: 0.5rem; }
-.nav-brand { font-family: var(--font-display); font-size: 1.15rem; color: var(--text); letter-spacing: -0.01em; cursor: pointer; display: flex; align-items: center; gap: .5rem; }
-.nav-brand em { color: var(--accent); font-style: italic; }
-.nav-brand img { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); }
-.nav-sp { flex: 1; }
-.nav-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-family: var(--font-body); font-size: 0.8rem; font-weight: 500; padding: 0.3rem 0.75rem; border-radius: 6px; cursor: pointer; text-decoration: none; transition: color .15s, border-color .15s, background .15s; display: inline-flex; align-items: center; gap: 0.35rem; }
-.nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-.nav-btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
-.nav-btn.accent:hover { background: var(--accent2); border-color: var(--accent2); }
-.nav-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); vertical-align: middle; }
-.nav-username { font-size: 0.8rem; color: var(--muted); }
-.nav-tag { font-size: 0.65rem; background: var(--surface2); color: var(--accent); padding: .15rem .4rem; border-radius: 4px; font-family: var(--font-mono); }
+/* Nav */
+#nav{position:sticky;top:0;z-index:100;height:56px;background:rgba(11,12,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 2rem;gap:.5rem}
+.nav-brand{font-family:var(--font-d);font-size:1.15rem;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.nav-brand em{color:var(--accent);font-style:italic}
+.nav-brand img{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border)}
+.nav-sp{flex:1}
+.nav-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--font-b);font-size:.8rem;font-weight:500;padding:.3rem .75rem;border-radius:6px;cursor:pointer;text-decoration:none;transition:color .15s,border-color .15s,background .15s;display:inline-flex;align-items:center;gap:.35rem}
+.nav-btn:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.nav-btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.nav-btn.accent:hover{background:var(--accent2);border-color:var(--accent2)}
+.nav-avatar{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border)}
+.nav-username{font-size:.8rem;color:var(--muted)}
+.nav-tag{font-size:.65rem;background:var(--surface2);color:var(--accent);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-m)}
 
-.page { display: none; max-width: 860px; margin: 0 auto; padding: 3.5rem 1.5rem; }
-.page.active { display: block; }
-.page-wide { max-width: 1100px; }
-@keyframes fadein { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-.page.active { animation: fadein .25s ease; }
+/* Pages */
+.page{display:none;max-width:860px;margin:0 auto;padding:3.5rem 1.5rem}
+.page.active{display:block}
+.page-wide{max-width:1100px}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.page.active{animation:fadein .25s ease}
 
-h1 { font-family: var(--font-display); font-size: clamp(2rem,5vw,3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
-h2 { font-family: var(--font-display); font-size: 1.8rem; letter-spacing: -0.01em; }
-h3 { font-family: var(--font-display); font-size: 1.25rem; }
-.lead { font-size: 1.05rem; color: var(--muted); line-height: 1.7; }
+/* Type */
+h1{font-family:var(--font-d);font-size:clamp(2rem,5vw,3.5rem);line-height:1.1;letter-spacing:-.02em}
+h2{font-family:var(--font-d);font-size:1.8rem;letter-spacing:-.01em}
+h3{font-family:var(--font-d);font-size:1.25rem}
+.lead{font-size:1.05rem;color:var(--muted);line-height:1.7}
 
-.btn { display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--font-body); font-size: 0.875rem; font-weight: 700; padding: 0.6rem 1.3rem; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; transition: transform .12s, opacity .12s, box-shadow .12s; letter-spacing: 0.01em; }
-.btn:hover { transform: translateY(-1px); opacity: 0.92; }
-.btn:active { transform: none; }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 0 20px rgba(124,106,255,0.25); }
-.btn-primary:hover { box-shadow: 0 0 30px rgba(124,106,255,0.4); }
-.btn-ghost   { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.btn-success { background: #16532d; color: var(--success); border: 1px solid rgba(74,222,128,.2); }
-.btn-danger  { background: #4c1a1a; color: var(--danger);  border: 1px solid rgba(248,113,113,.2); }
-.btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
-.btn:disabled { opacity: 0.4; pointer-events: none; }
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--font-b);font-size:.875rem;font-weight:700;padding:.6rem 1.3rem;border-radius:8px;border:none;cursor:pointer;text-decoration:none;transition:transform .12s,opacity .12s,box-shadow .12s;letter-spacing:.01em}
+.btn:hover{transform:translateY(-1px);opacity:.92}
+.btn:active{transform:none}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 0 20px rgba(124,106,255,.25)}
+.btn-primary:hover{box-shadow:0 0 30px rgba(124,106,255,.4)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-success{background:#16532d;color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.btn-danger{background:#4c1a1a;color:var(--danger);border:1px solid rgba(248,113,113,.2)}
+.btn-warn{background:#4a3200;color:var(--warn);border:1px solid rgba(251,191,36,.2)}
+.btn-sm{padding:.35rem .8rem;font-size:.8rem}
+.btn:disabled{opacity:.4;pointer-events:none}
 
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; }
-.card-sm { padding: 1rem 1.25rem; }
-.card + .card { margin-top: 0.75rem; }
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem}
+.card-sm{padding:1rem 1.25rem}
+.card+.card{margin-top:.75rem}
 
-.badge { display: inline-flex; align-items: center; padding: 0.18rem 0.55rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.badge-pending  { background: rgba(251,191,36,.12);  color: var(--warn); }
-.badge-approved { background: rgba(74,222,128,.12);  color: var(--success); }
-.badge-denied   { background: rgba(248,113,113,.12); color: var(--danger); }
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:.18rem .55rem;border-radius:99px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.badge-pending{background:rgba(251,191,36,.12);color:var(--warn)}
+.badge-approved{background:rgba(74,222,128,.12);color:var(--success)}
+.badge-denied{background:rgba(248,113,113,.12);color:var(--danger)}
 
-.field { margin-bottom: 1.25rem; }
-.field label { display: block; font-size: 0.82rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.45rem; }
-.field label .req { color: var(--danger); }
-.field input, .field textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; color: var(--text); font-family: var(--font-body); font-size: 0.9rem; outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical; }
-.field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,106,255,.1); }
-.field .hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }
-.field .char-count { font-size: 0.72rem; color: var(--muted); text-align: right; margin-top: 0.2rem; font-family: var(--font-mono); }
+/* Forms */
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+.field label .req{color:var(--danger)}
+.field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;color:var(--text);font-family:var(--font-b);font-size:.9rem;outline:none;transition:border-color .15s,box-shadow .15s;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,255,.1)}
+.field .hint{font-size:.75rem;color:var(--muted);margin-top:.35rem}
+.field .char-count{font-size:.72rem;color:var(--muted);text-align:right;margin-top:.2rem;font-family:var(--font-m)}
 
-.alert { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; margin-bottom: 1rem; }
-.alert-error   { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); color: var(--danger); }
-.alert-success { background: rgba(74,222,128,.1);  border: 1px solid rgba(74,222,128,.2);  color: var(--success); }
-.alert-info    { background: rgba(124,106,255,.1); border: 1px solid rgba(124,106,255,.2); color: var(--accent2); }
+/* Alerts */
+.alert{padding:.75rem 1rem;border-radius:8px;font-size:.875rem;margin-bottom:1rem}
+.alert-error{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--danger)}
+.alert-success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);color:var(--success)}
+.alert-info{background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent2)}
 
-hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-.spinner { width: 22px; height: 22px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 2rem auto; display: block; }
-@keyframes spin { to { transform: rotate(360deg); } }
+hr{border:none;border-top:1px solid var(--border);margin:2rem 0}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:2rem auto;display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-#modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(8px); z-index: 500; align-items: center; justify-content: center; }
-#modal-overlay.open { display: flex; }
-#modal-box { width: min(480px, 92vw); animation: fadein .2s ease; }
+/* Modal */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center}
+#modal-overlay.open{display:flex}
+#modal-box{width:min(480px,92vw);animation:fadein .2s ease;max-height:90vh;overflow-y:auto}
 
-#home-glow { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(ellipse, rgba(124,106,255,.18) 0%, transparent 70%); filter: blur(60px); pointer-events: none; }
-.role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 1rem; margin-top: 2rem; }
-.role-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s; position: relative; overflow: hidden; }
-.role-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(124,106,255,.05) 0%, transparent 60%); opacity: 0; transition: opacity .2s; }
-.role-card:hover { border-color: rgba(124,106,255,.4); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.3); }
-.role-card:hover::before { opacity: 1; }
-.role-emoji { font-size: 2.2rem; margin-bottom: .75rem; }
-.role-name  { font-family: var(--font-display); font-size: 1.1rem; }
-.role-desc  { color: var(--muted); font-size: .83rem; margin-top: .3rem; line-height: 1.5; }
-.role-qs    { font-size: .72rem; color: var(--accent2); margin-top: .6rem; font-family: var(--font-mono); }
+/* Home */
+#home-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(124,106,255,.18) 0%,transparent 70%);filter:blur(60px);pointer-events:none}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:2rem}
+.role-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.role-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,106,255,.05) 0%,transparent 60%);opacity:0;transition:opacity .2s}
+.role-card:hover{border-color:rgba(124,106,255,.4);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.role-card:hover::before{opacity:1}
+.role-emoji{font-size:2.2rem;margin-bottom:.75rem}
+.role-name{font-family:var(--font-d);font-size:1.1rem}
+.role-desc{color:var(--muted);font-size:.83rem;margin-top:.3rem;line-height:1.5}
+.role-qs{font-size:.72rem;color:var(--accent2);margin-top:.6rem;font-family:var(--font-m)}
 
-.back-link { color: var(--muted); font-size: .85rem; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; margin-bottom: 2rem; border: none; background: none; font-family: var(--font-body); transition: color .15s; }
-.back-link:hover { color: var(--text); }
+.back-link{color:var(--muted);font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;margin-bottom:2rem;border:none;background:none;font-family:var(--font-b);transition:color .15s}
+.back-link:hover{color:var(--text)}
 
-.tab-bar { display: flex; gap: .25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .25rem; margin-bottom: 1.5rem; width: fit-content; }
-.tab { padding: .38rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 700; cursor: pointer; border: none; background: none; color: var(--muted); font-family: var(--font-body); transition: background .15s, color .15s; }
-.tab.active { background: var(--accent); color: #fff; }
+/* Mod tabs */
+.tab-bar{display:flex;gap:.25rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.25rem;margin-bottom:1.5rem;width:fit-content}
+.tab{padding:.38rem 1rem;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;background:none;color:var(--muted);font-family:var(--font-b);transition:background .15s,color .15s}
+.tab.active{background:var(--accent);color:#fff}
 
-.stat-row { display: flex; gap: .5rem; flex-wrap: wrap; }
-.stat-pill { padding: .28rem .75rem; border-radius: 99px; font-size: .78rem; font-weight: 700; font-family: var(--font-mono); }
-.pill-pending  { background: rgba(251,191,36,.1);  color: var(--warn); }
-.pill-approved { background: rgba(74,222,128,.1);  color: var(--success); }
-.pill-denied   { background: rgba(248,113,113,.1); color: var(--danger); }
+.stat-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.stat-pill{padding:.28rem .75rem;border-radius:99px;font-size:.78rem;font-weight:700;font-family:var(--font-m)}
+.pill-pending{background:rgba(251,191,36,.1);color:var(--warn)}
+.pill-approved{background:rgba(74,222,128,.1);color:var(--success)}
+.pill-denied{background:rgba(248,113,113,.1);color:var(--danger)}
 
-.app-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem 1.3rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; transition: opacity .3s; }
-.app-row + .app-row { margin-top: .6rem; }
-.app-row-fade { opacity: 0; }
-.app-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
-.app-info { flex: 1; min-width: 0; }
-.app-user { font-weight: 700; font-size: .9rem; }
-.app-meta { color: var(--muted); font-size: .75rem; margin-top: .1rem; }
-.app-preview { margin-top: .6rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .8rem; font-size: .82rem; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.app-actions { display: flex; gap: .4rem; flex-shrink: 0; }
+.app-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.3rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;transition:opacity .3s}
+.app-row+.app-row{margin-top:.6rem}
+.app-row-fade{opacity:0}
+.app-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+.app-info{flex:1;min-width:0}
+.app-user{font-weight:700;font-size:.9rem}
+.app-meta{color:var(--muted);font-size:.75rem;margin-top:.1rem}
+.app-preview{margin-top:.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;font-size:.82rem;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.app-actions{display:flex;gap:.4rem;flex-shrink:0}
 
-.answer-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; }
-.answer-q { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .4rem; }
-.answer-a { font-size: .9rem; line-height: 1.65; white-space: pre-wrap; }
+.answer-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem}
+.answer-q{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.4rem}
+.answer-a{font-size:.9rem;line-height:1.65;white-space:pre-wrap}
 
-.my-app-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.3rem; }
-.my-app-card + .my-app-card { margin-top: .75rem; }
-details summary { cursor: pointer; font-size: .8rem; color: var(--muted); list-style: none; padding-top: .6rem; }
-details summary::before { content: '▸ '; }
-details[open] summary::before { content: '▾ '; }
+.my-app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem}
+.my-app-card+.my-app-card{margin-top:.75rem}
+details summary{cursor:pointer;font-size:.8rem;color:var(--muted);list-style:none;padding-top:.6rem}
+details summary::before{content:'▸ '}
+details[open] summary::before{content:'▾ '}
 
-.empty { text-align: center; padding: 4rem 2rem; }
-.empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty{text-align:center;padding:4rem 2rem}
+.empty-icon{font-size:3rem;margin-bottom:1rem}
 
-@media (max-width: 600px) {
-  #nav { padding: 0 1rem; }
-  .page { padding: 2rem 1rem; }
-  .app-actions { width: 100%; }
-}
+/* Config editor */
+.cfg-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.cfg-section-title{font-family:var(--font-d);font-size:1.1rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between}
+.role-editor{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:.75rem}
+.role-editor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.q-editor{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;margin-bottom:.6rem}
+.q-editor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;gap:.5rem;flex-wrap:wrap}
+.drag-handle{cursor:grab;color:var(--muted);font-size:1rem;user-select:none;padding:.2rem}
+.drag-handle:active{cursor:grabbing}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:99px;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--accent);border-color:var(--accent)}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider::before{transform:translateX(16px)}
+.add-btn{display:inline-flex;align-items:center;gap:.4rem;background:none;border:1px dashed var(--border);color:var(--muted);font-family:var(--font-b);font-size:.82rem;padding:.5rem 1rem;border-radius:8px;cursor:pointer;transition:color .15s,border-color .15s;width:100%;justify-content:center;margin-top:.25rem}
+.add-btn:hover{color:var(--text);border-color:var(--accent)}
+
+@media(max-width:600px){#nav{padding:0 1rem}.page{padding:2rem 1rem}.app-actions{width:100%}}
 </style>
 </head>
 <body>
@@ -276,11 +182,12 @@ details[open] summary::before { content: '▾ '; }
   <div id="nav-auth"></div>
 </nav>
 
+<!-- HOME -->
 <div id="page-home" class="page">
   <div style="position:relative;text-align:center;padding-top:2rem">
     <div id="home-glow"></div>
     <div style="position:relative;z-index:1">
-      <p style="font-family:var(--font-mono);font-size:.78rem;color:var(--accent2);letter-spacing:.12em;margin-bottom:1rem">ROLE APPLICATIONS</p>
+      <p style="font-family:var(--font-m);font-size:.78rem;color:var(--accent2);letter-spacing:.12em;margin-bottom:1rem">ROLE APPLICATIONS</p>
       <h1 id="home-title">Loading<em style="color:var(--accent)">.</em></h1>
       <p class="lead" style="max-width:520px;margin:1.2rem auto 2rem" id="home-sub"></p>
       <div id="home-cta"></div>
@@ -289,24 +196,30 @@ details[open] summary::before { content: '▾ '; }
   </div>
 </div>
 
+<!-- APPLY FORM -->
 <div id="page-apply" class="page" style="max-width:680px">
   <button class="back-link" onclick="showPage('home')">← Back to roles</button>
   <div id="apply-content"></div>
 </div>
 
+<!-- MY APPS -->
 <div id="page-mine" class="page">
   <h2 style="margin-bottom:.4rem">My Applications</h2>
   <p class="lead" style="margin-bottom:2rem">Track the status of your submissions.</p>
   <div id="mine-list"></div>
 </div>
 
+<!-- MOD DASHBOARD -->
 <div id="page-mod" class="page page-wide">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem">
     <div>
       <h2 style="margin-bottom:.3rem">Mod Dashboard</h2>
       <p class="lead" style="font-size:.9rem">Review and manage role applications</p>
     </div>
-    <div class="stat-row" id="mod-stats"></div>
+    <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+      <div class="stat-row" id="mod-stats"></div>
+      <button class="btn btn-warn btn-sm" onclick="showPage('config')">⚙ Edit Site Config</button>
+    </div>
   </div>
   <div class="tab-bar">
     <button class="tab active" onclick="loadMod('pending',this)">Pending</button>
@@ -316,30 +229,38 @@ details[open] summary::before { content: '▾ '; }
   <div id="mod-list"></div>
 </div>
 
+<!-- REVIEW PAGE -->
 <div id="page-review" class="page" style="max-width:720px">
   <button class="back-link" onclick="showPage('mod');loadMod('pending')">← Back to dashboard</button>
   <div id="review-content"></div>
 </div>
 
+<!-- CONFIG EDITOR -->
+<div id="page-config" class="page page-wide">
+  <button class="back-link" onclick="showPage('mod')">← Back to dashboard</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+    <div>
+      <h2 style="margin-bottom:.3rem">Site Config</h2>
+      <p class="lead" style="font-size:.9rem">Edit server info, roles, and application questions. Changes go live instantly.</p>
+    </div>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn btn-ghost" onclick="showPage('mod')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveConfig()" id="save-config-btn">Save Changes</button>
+    </div>
+  </div>
+  <div id="config-alert"></div>
+  <div id="config-editor"></div>
+</div>
+
+<!-- MODAL -->
 <div id="modal-overlay" onclick="closeModal(event)">
   <div id="modal-box" class="card"></div>
 </div>
 
 <script>
-let STATE = { token: null, user: null };
+let STATE = { token: null, user: null, config: null };
 
-// Apply SITE_CONFIG to the page on load
-(function() {
-  document.title = SITE_CONFIG.server_name + ' — Role Applications';
-  document.documentElement.style.setProperty('--accent', SITE_CONFIG.accent_color);
-  const brand = document.getElementById('nav-brand');
-  if (SITE_CONFIG.server_icon) {
-    brand.innerHTML = `<img src="${esc(SITE_CONFIG.server_icon)}" alt="">${esc(SITE_CONFIG.server_name)}<em>.</em>`;
-  } else {
-    brand.innerHTML = `${esc(SITE_CONFIG.server_name)}<em>.</em>`;
-  }
-})();
-
+// ── Boot ──────────────────────────────────────────────────────────────────
 async function init() {
   const hash = new URLSearchParams(location.hash.slice(1));
   if (hash.get('token')) {
@@ -348,11 +269,14 @@ async function init() {
     history.replaceState(null, '', location.pathname);
   }
   if (hash.get('error')) {
-    const msgs = { not_in_server: "You must be in the server to apply.", oauth_fail: "Discord login failed. Try again.", no_code: "OAuth was cancelled." };
+    const msgs = { not_in_server:"You must be in the server to apply.", oauth_fail:"Discord login failed.", no_code:"OAuth cancelled." };
     showToast(msgs[hash.get('error')] || 'Login error.', 'error');
     history.replaceState(null, '', location.pathname);
   }
   STATE.token = STATE.token || localStorage.getItem('app_token');
+  // Load config from worker
+  try { STATE.config = await api('/config'); } catch { STATE.config = null; }
+  applyConfig();
   if (STATE.token) {
     try { STATE.user = await api('/me'); }
     catch { STATE.token = null; localStorage.removeItem('app_token'); }
@@ -361,16 +285,29 @@ async function init() {
   showPage('home');
 }
 
+function applyConfig() {
+  const cfg = STATE.config;
+  if (!cfg) return;
+  document.title = cfg.server_name + ' — Role Applications';
+  if (cfg.accent_color) document.documentElement.style.setProperty('--accent', cfg.accent_color);
+  const brand = document.getElementById('nav-brand');
+  brand.innerHTML = cfg.server_icon
+    ? `<img src="${esc(cfg.server_icon)}" alt="">${esc(cfg.server_name)}<em>.</em>`
+    : `${esc(cfg.server_name)}<em>.</em>`;
+}
+
+// ── API ───────────────────────────────────────────────────────────────────
 async function api(path, opts = {}) {
   const res = await fetch(WORKER_URL + path, {
     ...opts,
-    headers: { 'Content-Type': 'application/json', ...(STATE.token ? { Authorization: `Bearer ${STATE.token}` } : {}), ...(opts.headers || {}) },
+    headers: { 'Content-Type':'application/json', ...(STATE.token ? {Authorization:`Bearer ${STATE.token}`} : {}), ...(opts.headers||{}) },
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Request failed');
   return data;
 }
 
+// ── Nav ───────────────────────────────────────────────────────────────────
 function renderNav() {
   const el = document.getElementById('nav-auth');
   if (STATE.user) {
@@ -380,64 +317,58 @@ function renderNav() {
       ${STATE.user.is_mod ? `<span class="nav-tag">MOD</span>` : ''}
       <button class="nav-btn" onclick="showPage('mine')">My Apps</button>
       ${STATE.user.is_mod ? `<button class="nav-btn" onclick="showPage('mod');loadMod('pending')">Dashboard</button>` : ''}
-      <button class="nav-btn" onclick="logout()">Logout</button>
-    `;
+      <button class="nav-btn" onclick="logout()">Logout</button>`;
   } else {
-    el.innerHTML = `<button class="nav-btn accent" onclick="login()">
-      <svg width="14" height="14" viewBox="0 0 71 55" fill="currentColor"><path d="M60.105 4.898A58.55 58.55 0 0 0 45.653.415a.22.22 0 0 0-.233.11 40.784 40.784 0 0 0-1.8 3.697c-5.456-.817-10.886-.817-16.23 0-.485-1.164-1.201-2.587-1.828-3.697a.228.228 0 0 0-.233-.11 58.386 58.386 0 0 0-14.451 4.483.207.207 0 0 0-.095.082C1.578 18.73-.944 32.144.293 45.39a.244.244 0 0 0 .093.167c6.073 4.46 11.955 7.167 17.729 8.962a.23.23 0 0 0 .249-.082 42.08 42.08 0 0 0 3.627-5.9.225.225 0 0 0-.123-.312 38.772 38.772 0 0 1-5.539-2.64.228.228 0 0 1-.022-.378 31.17 31.17 0 0 0 1.1-.862.22.22 0 0 1 .23-.031c11.621 5.305 24.199 5.305 35.68 0a.219.219 0 0 1 .233.028c.356.293.728.586 1.103.865a.228.228 0 0 1-.02.378 36.384 36.384 0 0 1-5.54 2.637.227.227 0 0 0-.121.315 47.249 47.249 0 0 0 3.624 5.897.225.225 0 0 0 .249.084c5.801-1.795 11.684-4.502 17.757-8.961a.228.228 0 0 0 .092-.164c1.48-15.315-2.48-28.618-10.497-40.412a.18.18 0 0 0-.093-.084z"/></svg>
-      Login with Discord
-    </button>`;
+    el.innerHTML = `<button class="nav-btn accent" onclick="login()">${discordIcon(14)} Login with Discord</button>`;
   }
 }
 
+function discordIcon(size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 71 55" fill="currentColor"><path d="M60.105 4.898A58.55 58.55 0 0 0 45.653.415a.22.22 0 0 0-.233.11 40.784 40.784 0 0 0-1.8 3.697c-5.456-.817-10.886-.817-16.23 0-.485-1.164-1.201-2.587-1.828-3.697a.228.228 0 0 0-.233-.11 58.386 58.386 0 0 0-14.451 4.483.207.207 0 0 0-.095.082C1.578 18.73-.944 32.144.293 45.39a.244.244 0 0 0 .093.167c6.073 4.46 11.955 7.167 17.729 8.962a.23.23 0 0 0 .249-.082 42.08 42.08 0 0 0 3.627-5.9.225.225 0 0 0-.123-.312 38.772 38.772 0 0 1-5.539-2.64.228.228 0 0 1-.022-.378 31.17 31.17 0 0 0 1.1-.862.22.22 0 0 1 .23-.031c11.621 5.305 24.199 5.305 35.68 0a.219.219 0 0 1 .233.028c.356.293.728.586 1.103.865a.228.228 0 0 1-.02.378 36.384 36.384 0 0 1-5.54 2.637.227.227 0 0 0-.121.315 47.249 47.249 0 0 0 3.624 5.897.225.225 0 0 0 .249.084c5.801-1.795 11.684-4.502 17.757-8.961a.228.228 0 0 0 .092-.164c1.48-15.315-2.48-28.618-10.497-40.412a.18.18 0 0 0-.093-.084z"/></svg>`;
+}
+
+// ── Pages ─────────────────────────────────────────────────────────────────
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const el = document.getElementById('page-' + id);
   if (el) el.classList.add('active');
-  if (id === 'home') renderHome();
-  if (id === 'mine') renderMine();
-  window.scrollTo(0, 0);
+  if (id === 'home')   renderHome();
+  if (id === 'mine')   renderMine();
+  if (id === 'config') renderConfigEditor();
+  window.scrollTo(0,0);
 }
 
+// ── HOME ──────────────────────────────────────────────────────────────────
 function renderHome() {
-  document.getElementById('home-title').innerHTML = esc(SITE_CONFIG.server_name) + ' <em style="color:var(--accent)">Roles</em>';
-  document.getElementById('home-sub').textContent = SITE_CONFIG.description;
+  const cfg = STATE.config;
+  document.getElementById('home-title').innerHTML = esc(cfg?.server_name || 'Server') + ' <em style="color:var(--accent)">Roles</em>';
+  document.getElementById('home-sub').textContent  = cfg?.description || '';
   const cta = document.getElementById('home-cta');
-  if (STATE.user) {
-    cta.innerHTML = `<button class="btn btn-primary" onclick="showPage('apply-list')">Browse Roles →</button>`;
-  } else {
-    cta.innerHTML = `<button class="btn btn-primary" onclick="login()">
-      <svg width="16" height="16" viewBox="0 0 71 55" fill="currentColor"><path d="M60.105 4.898A58.55 58.55 0 0 0 45.653.415a.22.22 0 0 0-.233.11 40.784 40.784 0 0 0-1.8 3.697c-5.456-.817-10.886-.817-16.23 0-.485-1.164-1.201-2.587-1.828-3.697a.228.228 0 0 0-.233-.11 58.386 58.386 0 0 0-14.451 4.483.207.207 0 0 0-.095.082C1.578 18.73-.944 32.144.293 45.39a.244.244 0 0 0 .093.167c6.073 4.46 11.955 7.167 17.729 8.962a.23.23 0 0 0 .249-.082 42.08 42.08 0 0 0 3.627-5.9.225.225 0 0 0-.123-.312 38.772 38.772 0 0 1-5.539-2.64.228.228 0 0 1-.022-.378 31.17 31.17 0 0 0 1.1-.862.22.22 0 0 1 .23-.031c11.621 5.305 24.199 5.305 35.68 0a.219.219 0 0 1 .233.028c.356.293.728.586 1.103.865a.228.228 0 0 1-.02.378 36.384 36.384 0 0 1-5.54 2.637.227.227 0 0 0-.121.315 47.249 47.249 0 0 0 3.624 5.897.225.225 0 0 0 .249.084c5.801-1.795 11.684-4.502 17.757-8.961a.228.228 0 0 0 .092-.164c1.48-15.315-2.48-28.618-10.497-40.412a.18.18 0 0 0-.093-.084z"/></svg>
-      Login with Discord to Apply
-    </button>`;
-  }
-  document.getElementById('role-grid').innerHTML = ROLES.map(r => `
+  cta.innerHTML = STATE.user
+    ? `<button class="btn btn-primary" onclick="showPage('apply-list')">Browse Roles →</button>`
+    : `<button class="btn btn-primary" onclick="login()">${discordIcon(16)} Login with Discord to Apply</button>`;
+  const roles = cfg?.roles || [];
+  document.getElementById('role-grid').innerHTML = roles.map(r => `
     <div class="role-card" onclick="STATE.user ? openApply('${esc(r.id)}') : login()">
       <div class="role-emoji">${r.emoji}</div>
       <div class="role-name">${esc(r.name)}</div>
       <div class="role-desc">${esc(r.description)}</div>
-      <div class="role-qs">${r.questions.length} question${r.questions.length !== 1 ? 's' : ''}</div>
-    </div>
-  `).join('');
+      <div class="role-qs">${r.questions.length} question${r.questions.length!==1?'s':''}</div>
+    </div>`).join('');
 }
 
+// ── APPLY ─────────────────────────────────────────────────────────────────
 async function openApply(roleId) {
   if (!STATE.user) { login(); return; }
-  const role = ROLES.find(r => r.id === roleId);
+  const role = (STATE.config?.roles||[]).find(r => r.id === roleId);
   if (!role) return;
   let pending = [];
   try { pending = await api('/applications/mine'); } catch {}
   const hasPending = pending.some(a => a.role_id === roleId && a.status === 'pending');
-  const hasRole    = (STATE.user.guild_roles || []).includes(roleId);
-  const content = document.getElementById('apply-content');
-  if (hasRole) {
-    content.innerHTML = `<div class="alert alert-success">You already have the <strong>${esc(role.name)}</strong> role!</div>`;
-    showPage('apply'); return;
-  }
-  if (hasPending) {
-    content.innerHTML = `<div class="alert alert-info">You already have a pending application for <strong>${esc(role.name)}</strong>. <button class="btn btn-ghost btn-sm" onclick="showPage('mine')">View it →</button></div>`;
-    showPage('apply'); return;
-  }
+  const hasRole    = (STATE.user.guild_roles||[]).includes(roleId);
+  const content    = document.getElementById('apply-content');
+  if (hasRole)    { content.innerHTML = `<div class="alert alert-success">You already have the <strong>${esc(role.name)}</strong> role!</div>`; showPage('apply'); return; }
+  if (hasPending) { content.innerHTML = `<div class="alert alert-info">Pending application for <strong>${esc(role.name)}</strong>. <button class="btn btn-ghost btn-sm" onclick="showPage('mine')">View it →</button></div>`; showPage('apply'); return; }
   content.innerHTML = `
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
       <span style="font-size:3rem">${role.emoji}</span>
@@ -445,244 +376,384 @@ async function openApply(roleId) {
     </div>
     <div id="apply-alert"></div>
     <form id="apply-form">
-      ${role.questions.map(q => `
+      ${role.questions.map(q=>`
         <div class="field">
-          <label for="q-${esc(q.id)}">${esc(q.label)}
-            ${q.required ? '<span class="req">*</span>' : '<span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional)</span>'}
-          </label>
-          ${q.type === 'textarea'
-            ? `<textarea id="q-${esc(q.id)}" name="${esc(q.id)}" rows="4" ${q.required?'required':''} oninput="updateCount(this,'${esc(q.id)}',${q.min_length||0})"></textarea>
-               ${q.min_length ? `<div class="char-count" id="cc-${esc(q.id)}">0 / ${q.min_length} min</div>` : ''}`
-            : `<input type="text" id="q-${esc(q.id)}" name="${esc(q.id)}" ${q.required?'required':''}>`
-          }
-          ${q.min_length ? `<div class="hint">Minimum ${q.min_length} characters.</div>` : ''}
-        </div>
-      `).join('')}
+          <label for="q-${esc(q.id)}">${esc(q.label)} ${q.required?'<span class="req">*</span>':'<span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional)</span>'}</label>
+          ${q.type==='textarea'
+            ?`<textarea id="q-${esc(q.id)}" name="${esc(q.id)}" rows="4" ${q.required?'required':''} oninput="updateCount(this,'${esc(q.id)}',${q.min_length||0})"></textarea>
+              ${q.min_length?`<div class="char-count" id="cc-${esc(q.id)}">0 / ${q.min_length} min</div>`:''}`
+            :`<input type="text" id="q-${esc(q.id)}" name="${esc(q.id)}" ${q.required?'required':''}>`}
+          ${q.min_length?`<div class="hint">Minimum ${q.min_length} characters.</div>`:''}
+        </div>`).join('')}
       <hr>
       <div style="display:flex;gap:.75rem;justify-content:flex-end">
         <button type="button" class="btn btn-ghost" onclick="showPage('home')">Cancel</button>
         <button type="submit" class="btn btn-primary" id="apply-submit">Submit Application →</button>
       </div>
-    </form>
-  `;
+    </form>`;
   showPage('apply');
-  document.getElementById('apply-form').onsubmit = async (e) => {
+  document.getElementById('apply-form').onsubmit = async e => {
     e.preventDefault();
     const btn = document.getElementById('apply-submit');
     const alertEl = document.getElementById('apply-alert');
-    btn.disabled = true; btn.textContent = 'Submitting…';
-    alertEl.innerHTML = '';
+    btn.disabled = true; btn.textContent = 'Submitting…'; alertEl.innerHTML = '';
     const answers = {};
-    role.questions.forEach(q => { answers[q.id] = document.getElementById('q-' + q.id)?.value?.trim() || ''; });
+    role.questions.forEach(q => { answers[q.id] = document.getElementById('q-'+q.id)?.value?.trim()||''; });
     try {
-      await api('/applications', { method: 'POST', body: JSON.stringify({ role_id: roleId, answers }) });
-      alertEl.innerHTML = '<div class="alert alert-success">Application submitted! You\'ll be DM\'d when it\'s reviewed. 🎉</div>';
+      await api('/applications', {method:'POST', body:JSON.stringify({role_id:roleId, answers})});
+      alertEl.innerHTML = '<div class="alert alert-success">Submitted! You\'ll be DM\'d when reviewed. 🎉</div>';
       document.getElementById('apply-form').style.display = 'none';
-    } catch(err) {
-      alertEl.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
-      btn.disabled = false; btn.textContent = 'Submit Application →';
-    }
+    } catch(e) { alertEl.innerHTML=`<div class="alert alert-error">${esc(e.message)}</div>`; btn.disabled=false; btn.textContent='Submit Application →'; }
   };
 }
 
 function updateCount(el, id, min) {
-  const cc = document.getElementById('cc-' + id);
-  if (!cc) return;
+  const cc = document.getElementById('cc-'+id); if (!cc) return;
   const n = el.value.trim().length;
-  cc.textContent = `${n} / ${min} min`;
-  cc.style.color = n >= min ? 'var(--success)' : 'var(--muted)';
+  cc.textContent = `${n} / ${min} min`; cc.style.color = n>=min?'var(--success)':'var(--muted)';
 }
 
+// ── MY APPS ───────────────────────────────────────────────────────────────
 async function renderMine() {
   if (!STATE.user) { showPage('home'); return; }
   const list = document.getElementById('mine-list');
   list.innerHTML = '<div class="spinner"></div>';
   let apps = [];
   try { apps = await api('/applications/mine'); } catch {}
-  if (!apps.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><h3>No applications yet</h3><p style="color:var(--muted);margin:.5rem 0 1.5rem">You haven't applied for any roles.</p><button class="btn btn-primary" onclick="showPage('home')">Browse Roles</button></div>`;
-    return;
-  }
-  list.innerHTML = apps.map(a => {
-    const answers = JSON.parse(a.answers || '{}');
-    const role    = ROLES.find(r => r.id === a.role_id);
-    const qs      = role?.questions || [];
-    const ansHtml = qs.length
-      ? qs.map(q => answers[q.id] ? `<div class="answer-block" style="margin-top:.5rem"><div class="answer-q">${esc(q.label)}</div><div class="answer-a" style="font-size:.82rem">${esc(answers[q.id])}</div></div>` : '').join('')
-      : Object.entries(answers).filter(([,v])=>v).map(([k,v])=>`<div class="answer-block" style="margin-top:.5rem"><div class="answer-q">${esc(k)}</div><div class="answer-a" style="font-size:.82rem">${esc(v)}</div></div>`).join('');
-    return `
-    <div class="my-app-card">
+  if (!apps.length) { list.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><h3>No applications yet</h3><p style="color:var(--muted);margin:.5rem 0 1.5rem">You haven't applied for any roles.</p><button class="btn btn-primary" onclick="showPage('home')">Browse Roles</button></div>`; return; }
+  const roles = STATE.config?.roles||[];
+  list.innerHTML = apps.map(a=>{
+    const answers=JSON.parse(a.answers||'{}'); const role=roles.find(r=>r.id===a.role_id); const qs=role?.questions||[];
+    const ansHtml=qs.length?qs.map(q=>answers[q.id]?`<div class="answer-block" style="margin-top:.5rem"><div class="answer-q">${esc(q.label)}</div><div class="answer-a" style="font-size:.82rem">${esc(answers[q.id])}</div></div>`:'').join(''):Object.entries(answers).filter(([,v])=>v).map(([k,v])=>`<div class="answer-block" style="margin-top:.5rem"><div class="answer-q">${esc(k)}</div><div class="answer-a" style="font-size:.82rem">${esc(v)}</div></div>`).join('');
+    return `<div class="my-app-card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
-        <div style="display:flex;align-items:center;gap:.6rem">
-          <strong>${role ? role.emoji + ' ' : ''}${esc(a.role_name)}</strong>
-          <span class="badge badge-${a.status}">${a.status}</span>
-        </div>
+        <div style="display:flex;align-items:center;gap:.6rem"><strong>${role?role.emoji+' ':''}${esc(a.role_name)}</strong><span class="badge badge-${a.status}">${a.status}</span></div>
         <span style="color:var(--muted);font-size:.75rem">${a.created_at?.slice(0,10)}</span>
       </div>
-      ${a.mod_note ? `<div style="margin-top:.7rem;padding:.6rem .9rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><p style="font-size:.72rem;color:var(--muted);margin-bottom:.2rem">Mod note from ${esc(a.reviewed_by||'')}</p><p style="font-size:.85rem">${esc(a.mod_note)}</p></div>` : ''}
+      ${a.mod_note?`<div style="margin-top:.7rem;padding:.6rem .9rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><p style="font-size:.72rem;color:var(--muted);margin-bottom:.2rem">Mod note from ${esc(a.reviewed_by||'')}</p><p style="font-size:.85rem">${esc(a.mod_note)}</p></div>`:''}
       <details><summary>View your answers</summary><div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem">${ansHtml}</div></details>
     </div>`;
   }).join('');
 }
 
+// ── MOD DASHBOARD ─────────────────────────────────────────────────────────
 async function loadMod(status, tabEl) {
   if (!STATE.user?.is_mod) { showPage('home'); return; }
-  if (tabEl) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tabEl.classList.add('active'); }
+  if (tabEl) { document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); tabEl.classList.add('active'); }
   const list = document.getElementById('mod-list');
   list.innerHTML = '<div class="spinner"></div>';
   let apps = [];
   try { apps = await api(`/mod/applications?status=${status}`); } catch {}
   updateModStats();
-  if (!apps.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">🎉</div><h3>All clear</h3><p style="color:var(--muted)">No ${status} applications.</p></div>`;
-    return;
-  }
-  list.innerHTML = apps.map(a => {
-    const answers  = JSON.parse(a.answers || '{}');
-    const role     = ROLES.find(r => r.id === a.role_id);
-    const qs       = role?.questions || [];
-    const firstKey = qs[0]?.id || Object.keys(answers)[0] || '';
-    const firstQ   = qs[0]?.label || firstKey;
-    const firstAns = answers[firstKey] || '';
-    return `
-    <div class="app-row" id="app-${a.id}">
-      <img class="app-avatar" src="${esc(a.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png')}" alt="">
+  if (!apps.length) { list.innerHTML=`<div class="empty"><div class="empty-icon">🎉</div><h3>All clear</h3><p style="color:var(--muted)">No ${status} applications.</p></div>`; return; }
+  const roles = STATE.config?.roles||[];
+  list.innerHTML = apps.map(a=>{
+    const answers=JSON.parse(a.answers||'{}'); const role=roles.find(r=>r.id===a.role_id); const qs=role?.questions||[];
+    const firstKey=qs[0]?.id||Object.keys(answers)[0]||''; const firstQ=qs[0]?.label||firstKey; const firstAns=answers[firstKey]||'';
+    return `<div class="app-row" id="app-${a.id}">
+      <img class="app-avatar" src="${esc(a.avatar||'https://cdn.discordapp.com/embed/avatars/0.png')}" alt="">
       <div class="app-info">
-        <div class="app-user">${esc(a.username)} <span style="color:var(--muted);font-weight:400;font-size:.8rem">→ ${role ? role.emoji + ' ' : ''}${esc(a.role_name)}</span></div>
-        <div class="app-meta">${a.created_at?.slice(0,16).replace('T',' ')} UTC${a.reviewed_by ? ` · reviewed by ${esc(a.reviewed_by)}` : ''}</div>
-        ${firstAns ? `<div class="app-preview"><span style="color:var(--accent2);font-size:.7rem;font-weight:700">${esc(firstQ)}: </span>${esc(firstAns)}</div>` : ''}
+        <div class="app-user">${esc(a.username)} <span style="color:var(--muted);font-weight:400;font-size:.8rem">→ ${role?role.emoji+' ':''}${esc(a.role_name)}</span></div>
+        <div class="app-meta">${a.created_at?.slice(0,16).replace('T',' ')} UTC${a.reviewed_by?` · reviewed by ${esc(a.reviewed_by)}`:''}</div>
+        ${firstAns?`<div class="app-preview"><span style="color:var(--accent2);font-size:.7rem;font-weight:700">${esc(firstQ)}: </span>${esc(firstAns)}</div>`:''}
       </div>
       <div class="app-actions">
         <button class="btn btn-ghost btn-sm" onclick="openReview(${a.id})">Full Review</button>
-        ${status === 'pending' ? `
-          <button class="btn btn-success btn-sm" onclick="quickAction(${a.id},'approve')">✓</button>
-          <button class="btn btn-danger  btn-sm" onclick="quickAction(${a.id},'deny')">✗</button>
-        ` : ''}
+        ${status==='pending'?`<button class="btn btn-success btn-sm" onclick="quickAction(${a.id},'approve')">✓</button><button class="btn btn-danger btn-sm" onclick="quickAction(${a.id},'deny')">✗</button>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
 async function updateModStats() {
-  const el = document.getElementById('mod-stats');
-  if (!el) return;
+  const el = document.getElementById('mod-stats'); if (!el) return;
   try {
-    const [p, ap, d] = await Promise.all([api('/mod/applications?status=pending'), api('/mod/applications?status=approved'), api('/mod/applications?status=denied')]);
+    const [p,ap,d] = await Promise.all([api('/mod/applications?status=pending'),api('/mod/applications?status=approved'),api('/mod/applications?status=denied')]);
     el.innerHTML = `<span class="stat-pill pill-pending">${p.length} pending</span><span class="stat-pill pill-approved">${ap.length} approved</span><span class="stat-pill pill-denied">${d.length} denied</span>`;
   } catch {}
 }
 
 function quickAction(appId, action) {
-  const isApprove = action === 'approve';
+  const isA = action==='approve';
   document.getElementById('modal-box').innerHTML = `
-    <h3 style="margin-bottom:1rem">${isApprove ? 'Approve' : 'Deny'} application</h3>
-    <div class="field">
-      <label for="modal-note">Mod note <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional — sent via DM)</span></label>
-      <textarea id="modal-note" rows="3" placeholder="${isApprove ? 'e.g. Welcome aboard!' : 'e.g. Not enough activity yet.'}"></textarea>
-    </div>
+    <h3 style="margin-bottom:1rem">${isA?'Approve':'Deny'} application</h3>
+    <div class="field"><label for="modal-note">Mod note <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional — sent via DM)</span></label>
+    <textarea id="modal-note" rows="3" placeholder="${isA?'e.g. Welcome aboard!':'e.g. Not enough activity yet.'}"></textarea></div>
     <div style="display:flex;gap:.75rem;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn ${isApprove ? 'btn-success' : 'btn-danger'}" onclick="submitQuick(${appId},'${action}')">${isApprove ? '✓ Approve' : '✗ Deny'}</button>
-    </div>
-  `;
+      <button class="btn ${isA?'btn-success':'btn-danger'}" onclick="submitQuick(${appId},'${action}')">${isA?'✓ Approve':'✗ Deny'}</button>
+    </div>`;
   openModal();
 }
 
 async function submitQuick(appId, action) {
-  const note = document.getElementById('modal-note')?.value?.trim() || '';
+  const note = document.getElementById('modal-note')?.value?.trim()||'';
   closeModal();
   try {
-    await api('/mod/review', { method: 'POST', body: JSON.stringify({ app_id: appId, action, mod_note: note }) });
-    const row = document.getElementById('app-' + appId);
-    if (row) { row.classList.add('app-row-fade'); setTimeout(() => row.remove(), 320); }
+    await api('/mod/review',{method:'POST',body:JSON.stringify({app_id:appId,action,mod_note:note})});
+    const row = document.getElementById('app-'+appId);
+    if (row) { row.classList.add('app-row-fade'); setTimeout(()=>row.remove(),320); }
     updateModStats();
-  } catch(e) { showToast(e.message, 'error'); }
+  } catch(e) { showToast(e.message,'error'); }
 }
 
 async function openReview(appId) {
   const content = document.getElementById('review-content');
-  content.innerHTML = '<div class="spinner"></div>';
-  showPage('review');
+  content.innerHTML = '<div class="spinner"></div>'; showPage('review');
   let apps = [];
   try { apps = await api('/mod/applications?status=pending'); } catch {}
-  if (!apps.find(a => a.id === appId)) {
-    try { const a = await api('/mod/applications?status=approved'); apps = [...apps, ...a]; } catch {}
-    try { const a = await api('/mod/applications?status=denied');   apps = [...apps, ...a]; } catch {}
+  if (!apps.find(a=>a.id===appId)) {
+    try { const a=await api('/mod/applications?status=approved'); apps=[...apps,...a]; } catch {}
+    try { const a=await api('/mod/applications?status=denied');   apps=[...apps,...a]; } catch {}
   }
-  const a = apps.find(x => x.id === appId);
-  if (!a) { content.innerHTML = '<div class="alert alert-error">Application not found.</div>'; return; }
-  const answers = JSON.parse(a.answers || '{}');
-  const role    = ROLES.find(r => r.id === a.role_id);
-  const qs      = role?.questions || [];
-  const ansHtml = qs.length
-    ? qs.map(q => `<div class="answer-block"><div class="answer-q">${esc(q.label)}</div><div class="answer-a">${answers[q.id] ? esc(answers[q.id]) : '<em style="color:var(--muted)">No answer.</em>'}</div></div>`).join('')
-    : Object.entries(answers).map(([k,v]) => `<div class="answer-block"><div class="answer-q">${esc(k)}</div><div class="answer-a">${esc(v)}</div></div>`).join('');
+  const a = apps.find(x=>x.id===appId);
+  if (!a) { content.innerHTML='<div class="alert alert-error">Not found.</div>'; return; }
+  const answers=JSON.parse(a.answers||'{}'); const roles=STATE.config?.roles||[]; const role=roles.find(r=>r.id===a.role_id); const qs=role?.questions||[];
+  const ansHtml=qs.length?qs.map(q=>`<div class="answer-block"><div class="answer-q">${esc(q.label)}</div><div class="answer-a">${answers[q.id]?esc(answers[q.id]):'<em style="color:var(--muted)">No answer.</em>'}</div></div>`).join(''):Object.entries(answers).map(([k,v])=>`<div class="answer-block"><div class="answer-q">${esc(k)}</div><div class="answer-a">${esc(v)}</div></div>`).join('');
   content.innerHTML = `
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
       <img src="${esc(a.avatar||'https://cdn.discordapp.com/embed/avatars/0.png')}" style="width:56px;height:56px;border-radius:50%;border:2px solid var(--border)">
       <div>
-        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-          <h3>${esc(a.username)}</h3>
-          <span class="badge badge-${a.status}">${a.status}</span>
-        </div>
-        <p style="color:var(--muted);font-size:.85rem">Applying for ${role ? role.emoji + ' ' : ''}<strong>${esc(a.role_name)}</strong></p>
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap"><h3>${esc(a.username)}</h3><span class="badge badge-${a.status}">${a.status}</span></div>
+        <p style="color:var(--muted);font-size:.85rem">Applying for ${role?role.emoji+' ':''}<strong>${esc(a.role_name)}</strong></p>
         <p style="color:var(--muted);font-size:.75rem">${a.created_at?.slice(0,16).replace('T',' ')} UTC</p>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem">${ansHtml}</div>
-    ${a.status === 'pending' ? `
-      <div class="card">
-        <h3 style="margin-bottom:1rem">Make a decision</h3>
-        <div id="review-alert"></div>
-        <div class="field">
-          <label for="review-note">Mod note <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional — sent via DM)</span></label>
-          <textarea id="review-note" rows="3" placeholder="Explain your decision…"></textarea>
-        </div>
+    ${a.status==='pending'?`
+      <div class="card"><h3 style="margin-bottom:1rem">Make a decision</h3><div id="review-alert"></div>
+        <div class="field"><label for="review-note">Mod note <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <textarea id="review-note" rows="3" placeholder="Explain your decision…"></textarea></div>
         <div style="display:flex;gap:.75rem;flex-wrap:wrap">
           <button class="btn btn-success" onclick="submitReview(${a.id},'approve')">✓ Approve & Give Role</button>
-          <button class="btn btn-danger"  onclick="submitReview(${a.id},'deny')">✗ Deny Application</button>
+          <button class="btn btn-danger" onclick="submitReview(${a.id},'deny')">✗ Deny Application</button>
         </div>
-      </div>
-    ` : `
-      <div class="card card-sm">
-        <p style="color:var(--muted);font-size:.875rem">
-          This application was <strong>${a.status}</strong> by <strong>${esc(a.reviewed_by||'unknown')}</strong>${a.reviewed_at ? ' on ' + a.reviewed_at.slice(0,10) : ''}.
-          ${a.mod_note ? `<br><br>📝 ${esc(a.mod_note)}` : ''}
-        </p>
-      </div>
-    `}
-  `;
+      </div>`:`
+      <div class="card card-sm"><p style="color:var(--muted);font-size:.875rem">
+        Application <strong>${a.status}</strong> by <strong>${esc(a.reviewed_by||'unknown')}</strong>${a.reviewed_at?' on '+a.reviewed_at.slice(0,10):''}.
+        ${a.mod_note?`<br><br>📝 ${esc(a.mod_note)}`:''}
+      </p></div>`}`;
 }
 
 async function submitReview(appId, action) {
-  const note    = document.getElementById('review-note')?.value?.trim() || '';
-  const alertEl = document.getElementById('review-alert');
+  const note=document.getElementById('review-note')?.value?.trim()||''; const alertEl=document.getElementById('review-alert');
   try {
-    await api('/mod/review', { method: 'POST', body: JSON.stringify({ app_id: appId, action, mod_note: note }) });
-    alertEl.innerHTML = `<div class="alert alert-success">Application ${action === 'approve' ? 'approved' : 'denied'} successfully!</div>`;
-    setTimeout(() => { showPage('mod'); loadMod('pending'); }, 1200);
-  } catch(e) { alertEl.innerHTML = `<div class="alert alert-error">${esc(e.message)}</div>`; }
+    await api('/mod/review',{method:'POST',body:JSON.stringify({app_id:appId,action,mod_note:note})});
+    alertEl.innerHTML=`<div class="alert alert-success">Application ${action==='approve'?'approved':'denied'} successfully!</div>`;
+    setTimeout(()=>{showPage('mod');loadMod('pending');},1200);
+  } catch(e) { alertEl.innerHTML=`<div class="alert alert-error">${esc(e.message)}</div>`; }
 }
 
-function login()  { location.href = WORKER_URL + '/oauth/redirect'; }
-function logout() { STATE.token = null; STATE.user = null; localStorage.removeItem('app_token'); renderNav(); showPage('home'); }
-function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
-function closeModal(e) { if (!e || e.target === document.getElementById('modal-overlay')) document.getElementById('modal-overlay').classList.remove('open'); }
+// ── CONFIG EDITOR ─────────────────────────────────────────────────────────
+let editingConfig = null;
 
-function showToast(msg, type = 'info') {
+function renderConfigEditor() {
+  if (!STATE.user?.is_mod) { showPage('home'); return; }
+  editingConfig = JSON.parse(JSON.stringify(STATE.config || { server_name:'My Server', server_icon:'', accent_color:'#7c6aff', description:'', roles:[] }));
+  renderConfigUI();
+}
+
+function renderConfigUI() {
+  const cfg = editingConfig;
+  document.getElementById('config-alert').innerHTML = '';
+  document.getElementById('config-editor').innerHTML = `
+    <!-- Site info -->
+    <div class="cfg-section">
+      <div class="cfg-section-title">🌐 Site Info</div>
+      <div class="field"><label>Server Name</label><input type="text" id="cfg-name" value="${esc(cfg.server_name||'')}"></div>
+      <div class="field"><label>Server Icon URL <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="cfg-icon" value="${esc(cfg.server_icon||'')}" placeholder="https://..."></div>
+      <div class="field"><label>Accent Colour</label>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <input type="color" id="cfg-color" value="${cfg.accent_color||'#7c6aff'}" style="width:44px;height:36px;padding:2px;border-radius:6px;border:1px solid var(--border);background:var(--bg);cursor:pointer">
+          <input type="text" id="cfg-color-hex" value="${cfg.accent_color||'#7c6aff'}" style="width:110px" oninput="syncColor('hex')" placeholder="#7c6aff">
+        </div>
+      </div>
+      <div class="field"><label>Description</label><textarea id="cfg-desc" rows="2">${esc(cfg.description||'')}</textarea></div>
+    </div>
+
+    <!-- Roles -->
+    <div class="cfg-section">
+      <div class="cfg-section-title">
+        🎭 Roles
+        <button class="btn btn-ghost btn-sm" onclick="addRole()">+ Add Role</button>
+      </div>
+      <div id="roles-container">
+        ${(cfg.roles||[]).map((r,ri) => renderRoleEditor(r,ri)).join('')}
+      </div>
+    </div>
+  `;
+  // Sync color picker ↔ hex input
+  document.getElementById('cfg-color').addEventListener('input', () => syncColor('picker'));
+}
+
+function syncColor(from) {
+  if (from === 'picker') {
+    document.getElementById('cfg-color-hex').value = document.getElementById('cfg-color').value;
+  } else {
+    const hex = document.getElementById('cfg-color-hex').value;
+    if (/^#[0-9a-fA-F]{6}$/.test(hex)) document.getElementById('cfg-color').value = hex;
+  }
+}
+
+function renderRoleEditor(role, ri) {
+  return `
+  <div class="role-editor" id="role-editor-${ri}">
+    <div class="role-editor-header">
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:1.5rem">${role.emoji||'❓'}</span>
+        <strong>${esc(role.name||'New Role')}</strong>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-ghost btn-sm" onclick="toggleRoleCollapse(${ri})" id="role-toggle-${ri}">▾ Collapse</button>
+        <button class="btn btn-danger btn-sm" onclick="removeRole(${ri})">Remove</button>
+      </div>
+    </div>
+    <div id="role-body-${ri}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="field" style="margin-bottom:.75rem"><label>Role Name</label><input type="text" value="${esc(role.name||'')}" oninput="updateRole(${ri},'name',this.value)"></div>
+        <div class="field" style="margin-bottom:.75rem"><label>Emoji</label><input type="text" value="${esc(role.emoji||'')}" style="max-width:80px" oninput="updateRole(${ri},'emoji',this.value)"></div>
+      </div>
+      <div class="field" style="margin-bottom:.75rem"><label>Discord Role ID</label><input type="text" value="${esc(role.id||'')}" placeholder="Right-click role → Copy ID" oninput="updateRole(${ri},'id',this.value)" style="font-family:var(--font-m);font-size:.85rem"></div>
+      <div class="field" style="margin-bottom:1rem"><label>Description</label><input type="text" value="${esc(role.description||'')}" oninput="updateRole(${ri},'description',this.value)"></div>
+      <div style="font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem">Questions</div>
+      <div id="questions-${ri}">
+        ${(role.questions||[]).map((q,qi) => renderQuestionEditor(q,ri,qi)).join('')}
+      </div>
+      <button class="add-btn" onclick="addQuestion(${ri})">+ Add Question</button>
+    </div>
+  </div>`;
+}
+
+function renderQuestionEditor(q, ri, qi) {
+  return `
+  <div class="q-editor" id="q-editor-${ri}-${qi}">
+    <div class="q-editor-header">
+      <span class="drag-handle">⠿</span>
+      <input type="text" value="${esc(q.label||'')}" placeholder="Question text…" style="flex:1;font-size:.88rem" oninput="updateQuestion(${ri},${qi},'label',this.value)">
+      <button class="btn btn-danger btn-sm" onclick="removeQuestion(${ri},${qi})">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end">
+      <div class="field" style="margin-bottom:0">
+        <label>Type</label>
+        <select onchange="updateQuestion(${ri},${qi},'type',this.value)">
+          <option value="textarea" ${q.type==='textarea'?'selected':''}>Textarea</option>
+          <option value="text"     ${q.type==='text'?'selected':''}>Text (single line)</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Min Length</label>
+        <input type="number" min="0" value="${q.min_length||0}" style="font-family:var(--font-m)" oninput="updateQuestion(${ri},${qi},'min_length',parseInt(this.value)||0)">
+      </div>
+      <div>
+        <div class="toggle-row">
+          <span style="font-size:.8rem;color:var(--muted)">Required</span>
+          <label class="toggle">
+            <input type="checkbox" ${q.required?'checked':''} onchange="updateQuestion(${ri},${qi},'required',this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+let collapsedRoles = {};
+function toggleRoleCollapse(ri) {
+  const body = document.getElementById('role-body-'+ri);
+  const btn  = document.getElementById('role-toggle-'+ri);
+  collapsedRoles[ri] = !collapsedRoles[ri];
+  body.style.display = collapsedRoles[ri] ? 'none' : '';
+  btn.textContent    = collapsedRoles[ri] ? '▸ Expand' : '▾ Collapse';
+}
+
+function addRole() {
+  editingConfig.roles.push({ id:'', name:'New Role', description:'', emoji:'🎭', questions:[] });
+  renderConfigUI();
+  // Scroll to new role
+  setTimeout(() => {
+    const last = document.querySelector('.role-editor:last-child');
+    if (last) last.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 100);
+}
+
+function removeRole(ri) {
+  editingConfig.roles.splice(ri, 1);
+  renderConfigUI();
+}
+
+function updateRole(ri, key, val) {
+  editingConfig.roles[ri][key] = val;
+  // Live-update header emoji/name without full re-render
+  const header = document.querySelector(`#role-editor-${ri} .role-editor-header strong`);
+  const emojiEl = document.querySelector(`#role-editor-${ri} .role-editor-header span`);
+  if (header && key === 'name')  header.textContent = val || 'New Role';
+  if (emojiEl && key === 'emoji') emojiEl.textContent = val || '❓';
+}
+
+function addQuestion(ri) {
+  editingConfig.roles[ri].questions.push({ id:'q'+Date.now(), label:'', type:'textarea', required:true, min_length:0 });
+  const container = document.getElementById('questions-'+ri);
+  const q = editingConfig.roles[ri].questions;
+  const qi = q.length - 1;
+  const div = document.createElement('div');
+  div.innerHTML = renderQuestionEditor(q[qi], ri, qi);
+  container.appendChild(div.firstElementChild);
+}
+
+function removeQuestion(ri, qi) {
+  editingConfig.roles[ri].questions.splice(qi, 1);
+  document.getElementById(`q-editor-${ri}-${qi}`)?.remove();
+  // Re-index remaining questions
+  const container = document.getElementById('questions-'+ri);
+  container.querySelectorAll('.q-editor').forEach((el, i) => { el.id = `q-editor-${ri}-${i}`; });
+}
+
+function updateQuestion(ri, qi, key, val) {
+  editingConfig.roles[ri].questions[qi][key] = val;
+}
+
+async function saveConfig() {
+  const btn = document.getElementById('save-config-btn');
+  const alertEl = document.getElementById('config-alert');
+  alertEl.innerHTML = '';
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  // Harvest latest values from inputs
+  const cfg = editingConfig;
+  cfg.server_name  = document.getElementById('cfg-name')?.value?.trim() || '';
+  cfg.server_icon  = document.getElementById('cfg-icon')?.value?.trim() || '';
+  cfg.accent_color = document.getElementById('cfg-color-hex')?.value?.trim() || '#7c6aff';
+  cfg.description  = document.getElementById('cfg-desc')?.value?.trim() || '';
+
+  try {
+    await api('/mod/config', {method:'POST', body:JSON.stringify(cfg)});
+    STATE.config = cfg;
+    applyConfig();
+    alertEl.innerHTML = '<div class="alert alert-success">✓ Config saved! Changes are live.</div>';
+    btn.textContent = 'Save Changes'; btn.disabled = false;
+  } catch(e) {
+    alertEl.innerHTML = `<div class="alert alert-error">${esc(e.message)}</div>`;
+    btn.textContent = 'Save Changes'; btn.disabled = false;
+  }
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+function login()  { location.href = WORKER_URL + '/oauth/redirect'; }
+function logout() { STATE.token=null; STATE.user=null; localStorage.removeItem('app_token'); renderNav(); showPage('home'); }
+
+// ── Modal ─────────────────────────────────────────────────────────────────
+function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal(e) { if (!e||e.target===document.getElementById('modal-overlay')) document.getElementById('modal-overlay').classList.remove('open'); }
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg, type='info') {
   const t = document.createElement('div');
   t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;padding:.75rem 1.1rem;border-radius:10px;font-size:.875rem;font-weight:600;animation:fadein .2s ease;max-width:340px;
-    ${type==='error'   ? 'background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:var(--danger)'   :
-      type==='success' ? 'background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:var(--success)'   :
-                         'background:rgba(124,106,255,.15);border:1px solid rgba(124,106,255,.3);color:var(--accent2)'}`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
+    ${type==='error'?'background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:var(--danger)':type==='success'?'background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:var(--success)':'background:rgba(124,106,255,.15);border:1px solid rgba(124,106,255,.3);color:var(--accent2)'}`;
+  t.textContent = msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3500);
 }
 
-function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s) { return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 init();
 </script>
