@@ -344,8 +344,8 @@ function renderHome() {
   document.getElementById('home-title').innerHTML = esc(cfg?.server_name || 'Server') + ' <em style="color:var(--accent)">Roles</em>';
   document.getElementById('home-sub').textContent  = cfg?.description || '';
   const cta = document.getElementById('home-cta');
-  cta.innerHTML = STATE.user
-    ? `<button class="btn btn-primary" onclick="showPage('apply-list')">Browse Roles →</button>`
+cta.innerHTML = STATE.user
+    ? `<button class="btn btn-primary" onclick="showPage('home')">Browse Roles →</button>`
     : `<button class="btn btn-primary" onclick="login()">${discordIcon(16)} Login with Discord to Apply</button>`;
   const roles = cfg?.roles || [];
   document.getElementById('role-grid').innerHTML = roles.map(r => `
